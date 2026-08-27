@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* -----------------------------------------------------------------------------
+ * QA Wireframe CSS — ported from qa-webapp.
+ * Defines the visual design for the migrated pages (`.nav`, `.btn`, `.panel`,
+ * `.app-pane`, `.pill-success`, etc.). The wireframe CSS uses CSS custom
+ * properties (`--bg`, `--fg`, `--accent`, ...) and a `prefers-color-scheme`
+ * dark-mode override, so no global tokens need to live here.
+ * --------------------------------------------------------------------------- */
+@import "./styles/qa-webapp.css";
