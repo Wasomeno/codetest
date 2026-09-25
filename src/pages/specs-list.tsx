@@ -108,6 +108,20 @@ export function SpecsListPage({ defaultProject }: SpecsListPageProps = {}) {
     },
   });
 
+  // Auto-sanitize project filter when projects load so stale or mock IDs don't empty the list
+  useEffect(() => {
+    if (filter !== "all" && projects.length > 0) {
+      const match = projects.find(
+        (p) => p.id === filter || p.name.toLowerCase() === filter.toLowerCase(),
+      );
+      if (!match) {
+        setFilter("all");
+      } else if (match.id !== filter) {
+        setFilter(match.id);
+      }
+    }
+  }, [projects, filter]);
+
   const filtered = useMemo(() => {
     let list = specs;
     if (filter !== "all") list = list.filter((s) => s.projectId === filter);
@@ -307,7 +321,38 @@ export function SpecsListPage({ defaultProject }: SpecsListPageProps = {}) {
               </tr>
             </thead>
             <tbody id="specs-tbody">
-              {pageItems.map((s) => {
+              {specsQuery.isError ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: "32px 16px", textAlign: "center", color: "var(--danger)" }}>
+                    <div style={{ marginBottom: 8, fontWeight: 500 }}>
+                      Failed to load specs: {specsQuery.error instanceof Error ? specsQuery.error.message : "Network error"}
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => specsQuery.refetch()}
+                    >
+                      Retry
+                    </button>
+                  </td>
+                </tr>
+              ) : (specsQuery.isLoading || projectsQuery.isLoading) ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} className="skeleton-row" style={{ opacity: 0.6 }}>
+                    <td colSpan={5} style={{ padding: "14px 16px" }}>
+                      <div
+                        style={{
+                          height: 14,
+                          background: "var(--border)",
+                          borderRadius: 4,
+                          width: `${45 + ((i * 19) % 50)}%`,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                pageItems.map((s) => {
                 return (
                   <tr
                     key={s.id}
@@ -358,7 +403,8 @@ export function SpecsListPage({ defaultProject }: SpecsListPageProps = {}) {
                     </td>
                   </tr>
                 );
-              })}
+              })
+              )}
             </tbody>
           </table>
           <div className="table-foot">

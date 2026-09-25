@@ -1,15 +1,18 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import {
   fmtDate,
   fmtRel,
-  getProject,
   RECENT_TEST_RUNS,
   STEPS_TEMPLATE,
-  TESTS,
 } from "~/lib/mock-data-new";
 import type { Step } from "~/lib/mock-data-new";
+import { useTestScenario } from "~/hooks/api/useTestScenarios";
+import { useProjects } from "~/hooks/api/useProjects";
+import { colorForName } from "~/lib/map-app-project";
+import { testScenarioApi } from "~/api/test-scenario";
+import type { TestScenario } from "~/types/test-scenario";
 
 // Inline icon defs (matches symbols from automation-test.html)
 const StepIcon = ({ action }: { action: Step["action"] }) => {
@@ -227,7 +230,216 @@ function StatusPill({ status }: { status: "passed" | "failed" | "flaky" }) {
   );
 }
 
-function ATStateEmpty({ test }: { test: { name: string; steps: number } }) {
+function PriorityPill({ priority }: { priority?: string }) {
+  if (!priority) return null;
+  const p = priority.toLowerCase();
+  let style: React.CSSProperties = {
+    fontFamily: "var(--font-mono)",
+    fontSize: "11px",
+    fontWeight: 500,
+    height: "20px",
+    padding: "0 7px",
+    borderRadius: "999px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "5px",
+    textTransform: "capitalize",
+    lineHeight: 1,
+  };
+
+  if (p === "critical") {
+    style = {
+      ...style,
+      background: "oklch(96% 0.03 25)",
+      border: "1px solid oklch(88% 0.06 25)",
+      color: "var(--danger)",
+    };
+  } else if (p === "high") {
+    style = {
+      ...style,
+      background: "oklch(97% 0.04 55)",
+      border: "1px solid oklch(88% 0.08 55)",
+      color: "oklch(55% 0.18 55)",
+    };
+  } else if (p === "medium") {
+    style = {
+      ...style,
+      background: "oklch(97% 0.02 240)",
+      border: "1px solid oklch(90% 0.05 240)",
+      color: "oklch(50% 0.14 240)",
+    };
+  } else {
+    style = {
+      ...style,
+      background: "oklch(97% 0.002 250)",
+      border: "1px solid var(--border)",
+      color: "var(--muted)",
+    };
+  }
+
+  return (
+    <span style={style}>
+      <span
+        style={{
+          width: 5,
+          height: 5,
+          borderRadius: "50%",
+          background: "currentColor",
+        }}
+      />
+      {priority}
+    </span>
+  );
+}
+
+function TypePill({ type }: { type?: string }) {
+  if (!type) return null;
+  const isPositive = type.toLowerCase() === "positive";
+  return (
+    <span
+      style={{
+        fontFamily: "var(--font-mono)",
+        fontSize: "11px",
+        fontWeight: 500,
+        height: "20px",
+        padding: "0 7px",
+        borderRadius: "999px",
+        display: "inline-flex",
+        alignItems: "center",
+        lineHeight: 1,
+        background: isPositive ? "oklch(97% 0.02 150)" : "oklch(97% 0.02 25)",
+        border: `1px solid ${isPositive ? "oklch(90% 0.05 150)" : "oklch(90% 0.05 25)"}`,
+        color: isPositive ? "var(--success)" : "var(--danger)",
+      }}
+    >
+      {type}
+    </span>
+  );
+}
+
+function AutomationCategoryPill({ category }: { category?: string | null }) {
+  if (!category) return null;
+  const cat = category.toUpperCase();
+  const isE2E = category.toLowerCase() === "e2e";
+  const isAPI = category.toLowerCase() === "api";
+  return (
+    <span
+      style={{
+        fontFamily: "var(--font-mono)",
+        fontSize: "10px",
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+        height: "20px",
+        padding: "0 6px",
+        borderRadius: "4px",
+        display: "inline-flex",
+        alignItems: "center",
+        lineHeight: 1,
+        background: isE2E
+          ? "oklch(96% 0.03 290)"
+          : isAPI
+            ? "oklch(96% 0.03 230)"
+            : "oklch(96% 0.005 250)",
+        border: `1px solid ${
+          isE2E
+            ? "oklch(88% 0.06 290)"
+            : isAPI
+              ? "oklch(88% 0.06 230)"
+              : "var(--border)"
+        }`,
+        color: isE2E
+          ? "oklch(45% 0.16 290)"
+          : isAPI
+            ? "oklch(45% 0.15 230)"
+            : "var(--muted)",
+      }}
+    >
+      {cat}
+    </span>
+  );
+}
+
+function generatePlaywrightCode(scenario: TestScenario): string {
+  const cases = scenario.sections?.flatMap((s) => s.testCases || []) || [];
+  const lines: string[] = [
+    `import { test, expect } from '@playwright/test';`,
+    ``,
+    `test.describe('${(scenario.title || "Test Scenario").replace(/'/g, "\\'")}', () => {`,
+  ];
+
+  if (scenario.authConfig?.baseUrl) {
+    lines.push(`  test.beforeEach(async ({ page }) => {`);
+    lines.push(`    await page.goto('${scenario.authConfig.baseUrl}');`);
+    lines.push(`  });`);
+    lines.push(``);
+  }
+
+  for (const tc of cases) {
+    const title = tc.code ? `${tc.code}: ${tc.title}` : tc.title;
+    lines.push(`  test('${title.replace(/'/g, "\\'")}', async ({ page }) => {`);
+
+    if (tc.preCondition) {
+      lines.push(`    // Precondition: ${tc.preCondition.replace(/\n/g, " ")}`);
+    }
+
+    if (tc.automationTest?.steps && tc.automationTest.steps.length > 0) {
+      for (const st of tc.automationTest.steps) {
+        if (st.description) {
+          lines.push(`    // ${st.description}`);
+        }
+        if (st.action === "navigate" && st.url) {
+          lines.push(`    await page.goto('${st.url}');`);
+        } else if (st.action === "click" && st.selector) {
+          lines.push(`    await page.locator('${st.selector}').click();`);
+        } else if (st.action === "type" && st.selector) {
+          lines.push(`    await page.locator('${st.selector}').fill('${(st.value || "").replace(/'/g, "\\'")}');`);
+        } else if (st.action === "select" && st.selector) {
+          lines.push(`    await page.locator('${st.selector}').selectOption('${(st.value || "").replace(/'/g, "\\'")}');`);
+        } else if (st.action === "assert" && st.selector) {
+          lines.push(`    await expect(page.locator('${st.selector}')).toBeVisible();`);
+        } else {
+          lines.push(`    // Step: ${st.action} on ${st.selector || "page"}`);
+        }
+      }
+    } else if (tc.steps && tc.steps.length > 0) {
+      for (const st of tc.steps) {
+        lines.push(`    // Step ${st.order}: ${st.action}`);
+        if (st.data) {
+          lines.push(`    // Data: ${st.data}`);
+        }
+        lines.push(`    // Expected: ${st.expected}`);
+        const actionLower = st.action.toLowerCase();
+        if (actionLower.includes("navigate") || actionLower.includes("open") || actionLower.includes("go to")) {
+          lines.push(`    await page.goto('/');`);
+        } else if (actionLower.includes("click") || actionLower.includes("press") || actionLower.includes("tap")) {
+          lines.push(`    await page.getByRole('button').click();`);
+        } else if (actionLower.includes("enter") || actionLower.includes("type") || actionLower.includes("fill")) {
+          lines.push(`    await page.getByRole('textbox').fill('${st.data ? st.data.replace(/'/g, "\\'") : "test"}');`);
+        } else {
+          lines.push(`    await expect(page).toHaveTitle(/.+/);`);
+        }
+      }
+    } else {
+      lines.push(`    await expect(page).toBeDefined();`);
+    }
+
+    lines.push(`  });`);
+    lines.push(``);
+  }
+
+  lines.push(`});`);
+  return lines.join("\n");
+}
+
+function ATStateEmpty({
+  test,
+  onGenerate,
+  isGenerating,
+}: {
+  test: { name: string; steps: number };
+  onGenerate: () => void;
+  isGenerating: boolean;
+}) {
   return (
     <div className="at-card at-card-state" data-state="empty" data-od-id="at-state-empty">
       <div className="at-card-head">
@@ -237,17 +449,21 @@ function ATStateEmpty({ test }: { test: { name: string; steps: number } }) {
         <div className="at-card-body">
           <h3 className="at-card-title">No automation test yet</h3>
           <p className="at-card-sub">
-            Generate a runnable Playwright script from the{" "}
+            Generate runnable Playwright scripts from the{" "}
             <strong>{test.steps} scenario steps</strong>. The model maps each
-            step to a selector strategy — Test ID preferred — and bakes in the
-            Stripe fixtures.
+            step to a selector strategy (Test ID preferred, role, or text) and bakes in test assertions.
           </p>
         </div>
       </div>
       <div className="at-card-actions">
-        <button className="btn btn-primary" type="button" onClick={() => alert("Generate: not implemented in UI migration")}>
+        <button
+          className="btn btn-primary"
+          type="button"
+          onClick={onGenerate}
+          disabled={isGenerating}
+        >
           <SparkleIcon />
-          Generate automation test
+          {isGenerating ? "Enqueuing generation…" : "Generate automation test"}
         </button>
         <span className="at-card-meta">est. 30–45s · Playwright · Test ID preferred</span>
       </div>
@@ -255,12 +471,37 @@ function ATStateEmpty({ test }: { test: { name: string; steps: number } }) {
   );
 }
 
-function ATStateRunning({ test }: { test: { name: string; steps: number } }) {
+function ATStateRunning({
+  test,
+  jobId,
+  jobStatus,
+  onDismiss,
+}: {
+  test: { name: string; steps: number };
+  jobId?: string | null;
+  jobStatus?: any;
+  onDismiss?: () => void;
+}) {
+  const statusText = jobStatus?.status || "processing";
+  const progressText = jobStatus?.caseCount
+    ? `Processing ${jobStatus.caseCount} test cases`
+    : `Mapping ${test.steps} scenario steps`;
+
   return (
     <div className="at-card at-card-state" data-state="running" data-od-id="at-state-running">
       <div className="at-card-head">
         <div className="at-card-icon">
-          <svg viewBox="0 0 16 16" width={18} height={18} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg
+            viewBox="0 0 16 16"
+            width={18}
+            height={18}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
             <path d="M8 2v4M8 10v4M2 8h4M10 8h4M3.8 3.8l2.8 2.8M9.4 9.4l2.8 2.8M3.8 12.2l2.8-2.8M9.4 6.6l2.8-2.8" />
           </svg>
         </div>
@@ -276,15 +517,17 @@ function ATStateRunning({ test }: { test: { name: string; steps: number } }) {
 
       <div className="at-workflow-meta">
         <span>
-          <b>Step 11</b> of {test.steps} · mapping selectors
+          <b>Status:</b> {statusText} · {progressText}
         </span>
-        <span className="at-workflow-pct">62%</span>
+        <span className="at-workflow-pct" style={{ fontFamily: "var(--font-mono)" }}>
+          {jobId ? jobId.slice(0, 8) : "running"}
+        </span>
       </div>
       <div className="at-workflow" aria-label="Generation workflow">
         <div className="at-progress" aria-hidden="true">
           <div
             className="at-progress-fill"
-            style={{ transform: "scaleX(0.62)" }}
+            style={{ width: "70%" }}
           />
         </div>
         <div className="at-workflow-step is-done">
@@ -328,19 +571,21 @@ function ATStateRunning({ test }: { test: { name: string; steps: number } }) {
         </div>
         <div className="at-log-line">
           <span className="at-log-ts">00:09</span>
-          <span>binding fixtures: stripe-test-card, usAddress</span>
+          <span>binding fixtures: auth-context, testData</span>
         </div>
         <div className="at-log-line">
           <span className="at-log-ts">00:18</span>
-          <span>generating step 11/{test.steps}: Complete 3DS challenge</span>
+          <span>generating Playwright test specs…</span>
         </div>
       </div>
       <div className="at-card-actions">
-        <button className="btn btn-ghost" type="button" onClick={() => alert("Cancel: not implemented in UI migration")}>
-          Cancel
-        </button>
+        {onDismiss && (
+          <button className="btn btn-ghost" type="button" onClick={onDismiss}>
+            Dismiss
+          </button>
+        )}
         <span className="at-card-meta" style={{ color: "var(--accent)" }}>
-          <span className="dot" />running · j-7f3a · 28s
+          <span className="dot" />running{jobId ? ` · ${jobId.slice(0, 8)}` : ""}
         </span>
       </div>
     </div>
@@ -348,26 +593,31 @@ function ATStateRunning({ test }: { test: { name: string; steps: number } }) {
 }
 
 function ATStateSuccess({
+  scenario,
   test,
-  steps,
+  onRegenerate,
+  isRegenerating,
   recentRuns,
 }: {
+  scenario: TestScenario;
   test: { name: string; steps: number };
-  steps: Step[];
+  onRegenerate: () => void;
+  isRegenerating: boolean;
   recentRuns: typeof RECENT_TEST_RUNS;
 }) {
-  // Build the generated-step list from the steps data. We map the
-  // STEPS_TEMPLATE's action -> generated step-action label, since the
-  // design uses friendlier copy ("fill + submit", "click (iframe)").
-  const GENERATED_ACTIONS: Record<string, string> = {
-    navigate: "navigate",
-    click: "click",
-    type: "fill + submit",
-    select: "select option",
-    assert: "assert",
-    webhook: "assert webhook",
-    api: "api assertion",
+  const [activeTab, setActiveTab] = useState<"steps" | "code">("steps");
+  const [copied, setCopied] = useState(false);
+
+  const allTestCases = scenario.sections?.flatMap((s) => s.testCases || []) || [];
+  const scriptName = `tests/${(scenario.title || "scenario").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.spec.ts`;
+  const playwrightCode = generatePlaywrightCode(scenario);
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(playwrightCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
+
   return (
     <div className="at-card at-card-state" data-state="success" data-od-id="at-state-success">
       <div className="at-card-head">
@@ -377,100 +627,219 @@ function ATStateSuccess({
         <div className="at-card-body">
           <h3 className="at-card-title">Automation test generated</h3>
           <p className="at-card-sub">
-            Playwright script for <strong>{test.name}</strong> ·{" "}
-            <strong>{test.steps} / {test.steps}</strong> steps mapped · last
-            validated Aug 28, 2024.
+            Playwright test suite for <strong>{scenario.title || test.name}</strong> ·{" "}
+            <strong>{allTestCases.length}</strong> test cases ·{" "}
+            <strong>{test.steps}</strong> steps mapped.
           </p>
         </div>
       </div>
 
       <div className="at-result">
         <div className="at-result-cell">
-          <div className="at-result-key">Last dry run</div>
-          <div className="at-result-val is-pass">9.9s</div>
+          <div className="at-result-key">Framework</div>
+          <div className="at-result-val is-pass">Playwright</div>
         </div>
         <div className="at-result-cell">
-          <div className="at-result-key">Steps covered</div>
-          <div className="at-result-val">
-            {test.steps} / {test.steps}
-          </div>
+          <div className="at-result-key">Test Cases Mapped</div>
+          <div className="at-result-val">{allTestCases.length}</div>
         </div>
         <div className="at-result-cell">
-          <div className="at-result-key">Selector strategy</div>
-          <div className="at-result-val" style={{ fontSize: 14 }}>
+          <div className="at-result-key">Selector Strategy</div>
+          <div className="at-result-val" style={{ fontSize: 13 }}>
             Test ID preferred
           </div>
         </div>
         <div className="at-result-cell">
-          <div className="at-result-key">Script</div>
-          <div className="at-result-val" style={{ fontSize: 13 }}>
-            tests/{test.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.spec.ts
+          <div className="at-result-key">Target Script</div>
+          <div className="at-result-val" style={{ fontSize: 12, fontFamily: "var(--font-mono)" }}>
+            {scriptName}
           </div>
         </div>
       </div>
 
-      <div className="at-step-list" data-od-id="at-step-list">
-        <div className="at-step-list-head">
-          <span>Generated steps</span>
-          <span className="at-step-count">{test.steps} mapped</span>
-        </div>
-        {steps.map((s) => (
-          <div key={s.num} className="step-row" data-step={s.num}>
-            <span className="step-icon">
-              <ActionIcon action={s.action} />
-            </span>
-            <span className="step-num">
-              {String(s.num).padStart(2, "0")}
-            </span>
-            <span className="step-action">
-              {GENERATED_ACTIONS[s.action] ?? s.action}
-            </span>
-            <span className="step-name">{s.name}</span>
-            <span className="step-time">{s.time}</span>
-            <svg
-              className="step-chevron"
-              viewBox="0 0 16 16"
-              width={12}
-              height={12}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              aria-hidden="true"
-            >
-              <path d="M6 3l5 5-5 5" />
-            </svg>
-          </div>
-        ))}
+      <div style={{ display: "flex", gap: "8px", marginTop: "16px", borderBottom: "1px solid var(--border)", paddingBottom: "8px" }}>
+        <button
+          type="button"
+          className={`btn ${activeTab === "steps" ? "btn-secondary" : "btn-ghost"}`}
+          style={{ height: 28, fontSize: 12, padding: "0 10px" }}
+          onClick={() => setActiveTab("steps")}
+        >
+          Mapped Test Cases ({allTestCases.length})
+        </button>
+        <button
+          type="button"
+          className={`btn ${activeTab === "code" ? "btn-secondary" : "btn-ghost"}`}
+          style={{ height: 28, fontSize: 12, padding: "0 10px" }}
+          onClick={() => setActiveTab("code")}
+        >
+          Generated Playwright Code
+        </button>
       </div>
+
+      {activeTab === "steps" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px" }}>
+          {allTestCases.map((tc, tcIdx) => (
+            <div
+              key={tc.id || tcIdx}
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: "8px",
+                background: "oklch(99.5% 0.001 250)",
+                padding: "12px 14px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {tc.code && (
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        background: "oklch(96% 0.005 250)",
+                        border: "1px solid var(--border)",
+                      }}
+                    >
+                      {tc.code}
+                    </span>
+                  )}
+                  <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--fg)" }}>
+                    {tc.title}
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span
+                    className="pill pill-success"
+                    style={{ height: "20px", fontSize: "11px" }}
+                  >
+                    <span className="swatch" />
+                    generated
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                {(tc.automationTest?.steps && tc.automationTest.steps.length > 0
+                  ? tc.automationTest.steps.map((st, i) => ({
+                      num: i + 1,
+                      action: st.action,
+                      name: st.description || `${st.action} ${st.selector || ""}`,
+                      selector: st.selector,
+                    }))
+                  : (tc.steps || []).map((st, i) => ({
+                      num: st.order || i + 1,
+                      action: st.action,
+                      name: st.action,
+                      expected: st.expected,
+                      selector: st.data ? `data: ${st.data}` : undefined,
+                    }))
+                ).map((s) => (
+                  <div
+                    key={s.num}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      padding: "6px 8px",
+                      borderRadius: "4px",
+                      background: "var(--surface)",
+                      border: "1px solid oklch(95% 0.004 250)",
+                      fontSize: "12px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        color: "var(--muted)",
+                        minWidth: "20px",
+                      }}
+                    >
+                      {String(s.num).padStart(2, "0")}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        color: "var(--accent-text)",
+                        background: "oklch(96% 0.03 162 / 0.5)",
+                        padding: "1px 5px",
+                        borderRadius: "3px",
+                      }}
+                    >
+                      {s.action}
+                    </span>
+                    <span style={{ color: "var(--fg)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {s.name}
+                    </span>
+                    {s.selector && (
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "11px",
+                          color: "var(--muted)",
+                          maxWidth: "200px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {s.selector}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {activeTab === "code" && (
+        <div style={{ marginTop: "12px", position: "relative" }}>
+          <div style={{ position: "absolute", top: "8px", right: "8px", zIndex: 2 }}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              style={{ height: 26, fontSize: 11, padding: "0 8px" }}
+              onClick={handleCopyCode}
+            >
+              {copied ? "Copied!" : "Copy code"}
+            </button>
+          </div>
+          <pre
+            style={{
+              margin: 0,
+              padding: "14px 16px",
+              borderRadius: "8px",
+              background: "oklch(15% 0.02 250)",
+              color: "oklch(92% 0.01 250)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "12px",
+              lineHeight: 1.6,
+              overflowX: "auto",
+              maxHeight: "450px",
+            }}
+          >
+            <code>{playwrightCode}</code>
+          </pre>
+        </div>
+      )}
 
       <div className="at-card-actions">
-        <button className="btn btn-primary" type="button" onClick={() => alert("Run now: not implemented in UI migration")}>
-          <PlayIcon />
-          Run now
-        </button>
-        <button className="btn btn-secondary" type="button" onClick={() => alert("View in repo: not implemented in UI migration")}>
-          View in repo
-        </button>
-        <button className="btn btn-ghost" type="button" onClick={() => alert("Add step: not implemented in UI migration")}>
-          <svg
-            viewBox="0 0 16 16"
-            width={11}
-            height={11}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <path d="M8 3v10M3 8h10" />
-          </svg>
-          Add step
-        </button>
-        <button className="btn btn-ghost" type="button" onClick={() => alert("Regenerate: not implemented in UI migration")}>
-          Regenerate
+        <button
+          className="btn btn-secondary"
+          type="button"
+          onClick={onRegenerate}
+          disabled={isRegenerating}
+        >
+          <SparkleIcon />
+          {isRegenerating ? "Regenerating…" : "Regenerate"}
         </button>
         <span className="at-card-meta" style={{ color: "var(--success)" }}>
-          <span className="dot" />passed · 1m ago
+          <span className="dot" />generated · ready to run
         </span>
       </div>
 
@@ -488,39 +857,53 @@ function ATStateSuccess({
           <div>Duration</div>
           <div style={{ textAlign: "right" }}>Status</div>
         </div>
-        {recentRuns.map((r) => {
-          const dotColor =
-            r.status === "passed"
-              ? "var(--success)"
-              : r.status === "flaky"
-                ? "var(--warn)"
-                : "var(--danger)";
-          return (
-            <Link
-              key={r.id}
-              to="/runs/$id" params={{ id: r.id }}
-              className="run-row"
-              data-run-id={r.id}
-              style={{ cursor: "pointer", textDecoration: "none" }}
-            >
-              <span className="run-id">
-                <span className="commit-dot" style={{ background: dotColor }} />
-                #{r.id} · main · {r.trigger}
-              </span>
-              <span className="run-when">{fmtRel(r.when)}</span>
-              <span className="run-duration">{r.duration}</span>
-              <span style={{ textAlign: "right" }}>
-                <StatusPill status={r.status} />
-              </span>
-            </Link>
-          );
-        })}
+        {recentRuns.map((r) => (
+          <Link
+            key={r.id}
+            to="/runs/$id" params={{ id: r.id }}
+            className="run-row"
+            data-run-id={r.id}
+            style={{ cursor: "pointer", textDecoration: "none" }}
+          >
+            <span className="run-id">
+              <span
+                className="commit-dot"
+                style={{
+                  background:
+                    r.status === "passed"
+                      ? "var(--success)"
+                      : r.status === "flaky"
+                        ? "var(--warn)"
+                        : "var(--danger)",
+                }}
+              />
+              #{r.id} · main · {r.trigger}
+            </span>
+            <span className="run-when">{fmtRel(r.when)}</span>
+            <span className="run-duration">{r.duration}</span>
+            <span style={{ textAlign: "right" }}>
+              <StatusPill status={r.status} />
+            </span>
+          </Link>
+        ))}
       </section>
     </div>
   );
 }
 
-function ATStateError({ test }: { test: { name: string; steps: number } }) {
+function ATStateError({
+  test,
+  errorMessage,
+  onRetry,
+  isRetrying,
+}: {
+  test: { name: string; steps: number };
+  errorMessage?: string;
+  onRetry: () => void;
+  isRetrying: boolean;
+}) {
+  const displayMsg = errorMessage || "E2E generation timed out after 5m0s";
+
   return (
     <div className="at-card at-card-state" data-state="error" data-od-id="at-state-error">
       <div className="at-card-head">
@@ -533,14 +916,10 @@ function ATStateError({ test }: { test: { name: string; steps: number } }) {
         </div>
         <div className="at-card-body">
           <h3 className="at-card-title">
-            Generation failed · 3 of {test.steps} steps unmapped
+            Generation failed
           </h3>
           <p className="at-card-sub">
-            The model couldn't resolve a stable selector for{" "}
-            <strong>step 9 (shipping address)</strong>,{" "}
-            <strong>step 13 (3DS iframe)</strong>, or{" "}
-            <strong>step 16 (confirmation webhook)</strong>. Edit the scenario,
-            then regenerate.
+            The automation generation worker encountered an error while processing the scenario.
           </p>
         </div>
       </div>
@@ -561,47 +940,27 @@ function ATStateError({ test }: { test: { name: string; steps: number } }) {
             <path d="M8 5v3.5" />
             <circle cx="8" cy="11" r="0.6" fill="currentColor" />
           </svg>
-          generation-error · j-7f3a
+          generation-error
         </div>
         <div className="at-error-body">
-          <ol className="err-list">
-            <li className="err-line">
-              <span className="err-ts">00:21</span>
-              <span>
-                <span className="err-loc">step 13</span> ambiguous selector
-                for "Complete 3DS challenge" — 3 matches in{" "}
-                <code>checkout.testid.tsx</code>
-              </span>
-            </li>
-            <li className="err-line">
-              <span className="err-ts">00:22</span>
-              <span>
-                <span className="err-loc">step 9</span> no testid found for
-                "Fill shipping address" — fallback CSS used, but unstable
-              </span>
-            </li>
-            <li className="err-line">
-              <span className="err-ts">00:23</span>
-              <span>
-                <span className="err-loc">step 16</span> webhook path{" "}
-                <code>confirmation-email-webhook</code> not registered in
-                fixtures
-              </span>
-            </li>
-          </ol>
-          <div className="err-hint">
+          <div style={{ padding: "8px 0", fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--danger)", wordBreak: "break-word" }}>
+            {displayMsg}
+          </div>
+          <div className="err-hint" style={{ marginTop: 8 }}>
             <span className="err-hint-icon">!</span>
             <span>
-              <b>Fix:</b> add a <code>data-testid</code> to the 3DS iframe
-              wrapper + the shipping address input, then register a{" "}
-              <code>confirmation-email-webhook</code> fixture. After editing,
-              click <i>Regenerate</i>.
+              <b>Fix:</b> Check backend worker logs and verify repository settings, then click <i>Retry generation</i>.
             </span>
           </div>
         </div>
       </div>
       <div className="at-card-actions">
-        <button className="btn btn-primary" type="button" onClick={() => alert("Retry generation: not implemented in UI migration")}>
+        <button
+          className="btn btn-primary"
+          type="button"
+          onClick={onRetry}
+          disabled={isRetrying}
+        >
           <svg
             viewBox="0 0 16 16"
             width={12}
@@ -616,13 +975,10 @@ function ATStateError({ test }: { test: { name: string; steps: number } }) {
             <path d="M2.5 8a5.5 5.5 0 0 1 9.7-3.5M13.5 8a5.5 5.5 0 0 1-9.7 3.5" />
             <path d="M11 2v3h-3M5 14v-3h3" />
           </svg>
-          Retry generation
-        </button>
-        <button className="btn btn-ghost" type="button" onClick={() => alert("Open steps to fix: not implemented in UI migration")}>
-          Open steps to fix
+          {isRetrying ? "Retrying generation…" : "Retry generation"}
         </button>
         <span className="at-card-meta" style={{ color: "var(--danger)" }}>
-          <span className="dot" />failed · j-7f3a
+          <span className="dot" />failed
         </span>
       </div>
     </div>
@@ -630,11 +986,18 @@ function ATStateError({ test }: { test: { name: string; steps: number } }) {
 }
 
 export function TestDetailPage({ testId }: { testId: string }) {
-  const test = TESTS.find((t) => t.id === testId) || TESTS[0];
-  const project = getProject(test.project);
+  const scenarioQuery = useTestScenario(testId);
+  const projectsQuery = useProjects();
+  const projects = projectsQuery.data ?? [];
+  const scenario = scenarioQuery.data;
+
   const [status, setStatus] = useState("passing");
   const [tab, setTab] = useState<TabId>("overview");
-  const [atState, setAtState] = useState<ATStateId>("success");
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [jobStatus, setJobStatus] = useState<any>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   // Sliding underline indicator. We measure each tab button and drive
   // the indicator's transform + width from React so the underline
@@ -648,10 +1011,121 @@ export function TestDetailPage({ testId }: { testId: string }) {
   useLayoutEffect(() => {
     const el = tabRefs.current[tab];
     if (!el) return;
-    // Match the 8px inset from the previous per-tab ::after so the
-    // indicator visually lines up with the old underline.
     setIndicator({ x: el.offsetLeft + 8, w: el.offsetWidth - 16 });
   }, [tab]);
+
+  // Poll generation job if activeJobId is set
+  useEffect(() => {
+    if (!activeJobId || !isGenerating) return;
+
+    let isMounted = true;
+    const interval = setInterval(async () => {
+      try {
+        const job = await testScenarioApi.getGenerationJob(activeJobId);
+        if (!isMounted) return;
+        setJobStatus(job);
+
+        if (job.status === "completed") {
+          setIsGenerating(false);
+          setActiveJobId(null);
+          await scenarioQuery.refetch();
+        } else if (job.status === "failed") {
+          setIsGenerating(false);
+          setActiveJobId(null);
+          setGenerationError(job.error || "Generation job failed");
+          await scenarioQuery.refetch();
+        }
+      } catch (err: any) {
+        if (!isMounted) return;
+        await scenarioQuery.refetch();
+      }
+    }, 2000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [activeJobId, isGenerating, scenarioQuery]);
+
+  if (scenarioQuery.isLoading) {
+    return <StatePane title="Loading test scenario" message="Fetching scenario details from the backend…" />;
+  }
+  if (scenarioQuery.isError || !scenario) {
+    return (
+      <StatePane
+        title="Couldn’t load test scenario"
+        message={scenarioQuery.error instanceof Error ? scenarioQuery.error.message : "Scenario not found"}
+      />
+    );
+  }
+
+  const hasGeneratedSteps = scenario.sections?.some((s) =>
+    s.testCases?.some(
+      (tc) =>
+        (tc.automationTest?.steps && tc.automationTest.steps.length > 0) ||
+        tc.automationTest?.status === "pass" ||
+        tc.automationStatus === "passed",
+    ),
+  ) ?? false;
+
+  const atState: ATStateId = (() => {
+    if (isGenerating || (scenario.automationStats?.runningCount ?? 0) > 0) {
+      return "running";
+    }
+    if ((scenario.automationStats?.generatedCount ?? 0) > 0 || hasGeneratedSteps) {
+      return "success";
+    }
+    if (
+      generationError ||
+      scenario.error ||
+      ((scenario.automationStats?.failCount ?? 0) > 0 &&
+        (scenario.automationStats?.generatedCount ?? 0) === 0)
+    ) {
+      return "error";
+    }
+    return "empty";
+  })();
+
+  const handleGenerateAutomations = async () => {
+    try {
+      setIsGenerating(true);
+      setGenerationError(null);
+
+      const res = await testScenarioApi.generateScenarioAutomations(
+        scenario.id,
+        scenario.projectId,
+      );
+      if (res.jobId) {
+        setActiveJobId(res.jobId);
+      }
+      await scenarioQuery.refetch();
+    } catch (err: any) {
+      setIsGenerating(false);
+      setGenerationError(err.message || "Failed to start automation generation");
+    }
+  };
+
+  const proj = projects.find((p) => p.id === scenario.projectId);
+  const projectName = proj?.name || "Project";
+  const projectColor = colorForName(projectName);
+  const scenarioName = scenario.title || scenario.id;
+  const totalSteps = scenario.sections?.reduce(
+    (acc, sec) => acc + (sec.testCases?.reduce((tcAcc, tc) => tcAcc + (tc.steps?.length || 0), 0) || 0),
+    0,
+  ) || 0;
+  const totalTestCases =
+    scenario.sections?.reduce((acc, sec) => acc + (sec.testCases?.length || 0), 0) || 0;
+  const allTags = Array.from(
+    new Set(
+      scenario.sections?.flatMap((s) => s.testCases?.flatMap((tc) => tc.tags || []) || []) || [],
+    ),
+  );
+  const testObj = {
+    name: scenarioName,
+    steps: Math.max(totalSteps, 1),
+    ranAt: scenario.updatedAt || scenario.createdAt,
+    createdAt: scenario.createdAt,
+  };
 
   return (
     <div className="app-pane" id="pane-test-detail" data-od-id="pane-test-detail">
@@ -660,12 +1134,12 @@ export function TestDetailPage({ testId }: { testId: string }) {
           <nav className="detail-breadcrumb" aria-label="Breadcrumb">
             <Link to="/tests">Test Scenarios</Link>
             <span className="sep">›</span>
-            <Link to="/tests">{project.label}</Link>
+            <Link to="/tests">{projectName}</Link>
             <span className="sep">›</span>
-            <span className="current">{test.name}</span>
+            <span className="current">{scenarioName}</span>
           </nav>
           <div className="detail-title-row">
-            <span className="detail-title pill-edit-host">{test.name}</span>
+            <span className="detail-title pill-edit-host">{scenarioName}</span>
             <StatusMenu value={status} onChange={setStatus} />
             <div className="detail-actions">
               <button
@@ -782,141 +1256,244 @@ export function TestDetailPage({ testId }: { testId: string }) {
             aria-labelledby="tab-overview"
             data-od-id="panel-overview"
           >
-            <div className="detail-stats" data-od-id="detail-stats">
-              <div className="stat">
-                <div className="stat-label">Pass rate · 30d</div>
-                <div className="stat-value">96.7%</div>
+            {scenario.description && (
+              <div className="overview-body" style={{ padding: "16px 20px" }}>
+                <p className="overview-desc">{scenario.description}</p>
               </div>
-              <div className="stat">
-                <div className="stat-label">Last run</div>
-                <div
-                  className="stat-value"
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontWeight: 500,
-                    fontSize: 15,
-                  }}
-                >
-                  {fmtRel(test.ranAt)}
-                </div>
+            )}
+
+            {scenario.sections && scenario.sections.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {scenario.sections.map((sec, secIndex) => (
+                  <div key={sec.id || secIndex} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {scenario.sections!.length > 1 && sec.title && sec.title !== scenario.title && (
+                      <div
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: "var(--muted)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.06em",
+                          marginTop: secIndex > 0 ? 8 : 0,
+                        }}
+                      >
+                        {sec.title} · {sec.testCases?.length || 0} cases
+                      </div>
+                    )}
+                    {sec.testCases?.map((tc) => (
+                      <div
+                        key={tc.id}
+                        style={{
+                          border: "1px solid var(--border)",
+                          borderRadius: 8,
+                          background: "var(--surface)",
+                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.02)",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "12px 16px",
+                            borderBottom: "1px solid var(--border)",
+                            background: "oklch(99.5% 0.001 250)",
+                            flexWrap: "wrap",
+                            gap: 8,
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
+                            {tc.code && (
+                              <span
+                                style={{
+                                  fontFamily: "var(--font-mono)",
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  padding: "2px 7px",
+                                  borderRadius: 4,
+                                  background: "oklch(96% 0.005 250)",
+                                  border: "1px solid var(--border)",
+                                  color: "var(--fg)",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {tc.code}
+                              </span>
+                            )}
+                            <h4
+                              style={{
+                                margin: 0,
+                                fontSize: 14,
+                                fontWeight: 600,
+                                color: "var(--fg)",
+                                letterSpacing: "-0.01em",
+                                lineHeight: 1.4,
+                              }}
+                            >
+                              {tc.title}
+                            </h4>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                            <PriorityPill priority={tc.priority} />
+                            <TypePill type={tc.type} />
+                            <AutomationCategoryPill category={tc.automationType || tc.automationTest?.category} />
+                          </div>
+                        </div>
+
+                        <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+                          {tc.preCondition && (
+                            <div
+                              style={{
+                                background: "oklch(98.5% 0.002 250)",
+                                border: "1px solid var(--border)",
+                                borderLeft: "3px solid var(--accent)",
+                                borderRadius: 6,
+                                padding: "10px 14px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  letterSpacing: "0.08em",
+                                  textTransform: "uppercase",
+                                  color: "var(--muted)",
+                                  marginBottom: 4,
+                                }}
+                              >
+                                PRECONDITION
+                              </div>
+                              <div style={{ fontSize: 12.5, color: "var(--fg)", lineHeight: 1.5 }}>
+                                {tc.preCondition.replace(/^-\s*/, "")}
+                              </div>
+                            </div>
+                          )}
+
+                          {tc.steps && tc.steps.length > 0 && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              <div
+                                style={{
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  letterSpacing: "0.04em",
+                                  textTransform: "uppercase",
+                                  color: "var(--muted)",
+                                  marginBottom: 2,
+                                }}
+                              >
+                                Steps ({tc.steps.length})
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                {tc.steps.map((st, sIdx) => (
+                                  <div
+                                    key={st.id || sIdx}
+                                    style={{
+                                      display: "grid",
+                                      gridTemplateColumns: "36px 1fr 1fr",
+                                      alignItems: "flex-start",
+                                      gap: 12,
+                                      padding: "10px 12px",
+                                      borderRadius: 6,
+                                      background: "oklch(99% 0.002 250)",
+                                      border: "1px solid oklch(94% 0.005 250)",
+                                      fontSize: 12.5,
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontFamily: "var(--font-mono)",
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        color: "var(--muted)",
+                                        background: "var(--surface)",
+                                        border: "1px solid var(--border)",
+                                        borderRadius: 4,
+                                        height: 24,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      {String(st.order || sIdx + 1).padStart(2, "0")}
+                                    </div>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                      <div style={{ color: "var(--fg)", fontWeight: 500, lineHeight: 1.4 }}>
+                                        {st.action}
+                                      </div>
+                                      {st.data && (
+                                        <div>
+                                          <span
+                                            style={{
+                                              fontFamily: "var(--font-mono)",
+                                              fontSize: 11,
+                                              background: "oklch(96% 0.005 250)",
+                                              padding: "2px 6px",
+                                              borderRadius: 4,
+                                              border: "1px solid var(--border)",
+                                              color: "var(--muted)",
+                                            }}
+                                          >
+                                            Data: {st.data}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        gap: 6,
+                                        color: "oklch(40% 0.05 250)",
+                                        lineHeight: 1.4,
+                                        padding: "4px 8px",
+                                        borderRadius: 4,
+                                        background: "oklch(98% 0.005 150 / 0.4)",
+                                        border: "1px solid oklch(92% 0.02 150 / 0.5)",
+                                      }}
+                                    >
+                                      <span style={{ color: "var(--success)", flexShrink: 0, marginTop: 1 }}>
+                                        <CheckIcon size={12} />
+                                      </span>
+                                      <span style={{ fontSize: 12 }}>{st.expected}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {tc.tags && tc.tags.length > 0 && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", paddingTop: 4 }}>
+                              {tc.tags.map((tag) => (
+                                <span
+                                  key={tag}
+                                  style={{
+                                    fontSize: 11,
+                                    fontFamily: "var(--font-mono)",
+                                    color: "var(--muted)",
+                                    background: "oklch(97% 0.003 250)",
+                                    border: "1px solid var(--border)",
+                                    padding: "1px 7px",
+                                    borderRadius: 999,
+                                  }}
+                                >
+                                  #{tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
-              <div className="stat">
-                <div className="stat-label">Avg duration</div>
-                <div className="stat-value">9.9s</div>
-              </div>
-              <div className="stat">
-                <div className="stat-label">Total runs</div>
-                <div className="stat-value">1,842</div>
-              </div>
-            </div>
-
-            <section className="panel" data-od-id="detail-steps">
-              <div className="scenario-prose" data-od-id="scenario-prose">
-                <h2 id="scenario-overview">Overview</h2>
-                <p>
-                  End-to-end checkout against the production storefront on the{" "}
-                  <code>main</code> branch. Verifies the Stripe USD happy path:
-                  cart subtotal, promo application, shipping selection, 3DS
-                  challenge, and post-order webhooks. Scheduled every 30
-                  minutes.
-                </p>
-
-                <h2 id="scenario-preconditions">Preconditions</h2>
-                <ul>
-                  <li>
-                    Stripe test mode is active and <code>WELCOME10</code> promo
-                    is configured for <code>acme-storefront</code>.
-                  </li>
-                  <li>
-                    The test fixture card <code>4242 4242 4242 4242</code>{" "}
-                    triggers a 3DS challenge.
-                  </li>
-                  <li>
-                    Webhook listener{" "}
-                    <code>confirmation-email-webhook</code> is registered
-                    against the test mailbox.
-                  </li>
-                </ul>
-
-                <h2 id="scenario-flow">Flow</h2>
-                <ol>
-                  <li>
-                    Open <code>https://acme-storefront.com/</code> and wait
-                    for the document to load.
-                  </li>
-                  <li>
-                    Search for <code>&quot;Acme Tee&quot;</code> and open the
-                    first product detail page.
-                  </li>
-                  <li>
-                    Select size <code>M</code>, color <code>black</code>, and
-                    add the variant to the cart.
-                  </li>
-                  <li>
-                    Open the cart drawer and assert the badge reads{" "}
-                    <code>&quot;1&quot;</code>.
-                  </li>
-                  <li>
-                    Apply promo code <code>WELCOME10</code> and confirm the
-                    subtotal drops by 10%.
-                  </li>
-                  <li>
-                    Begin checkout, fill the shipping address from the{" "}
-                    <code>usAddress</code> fixture.
-                  </li>
-                  <li>
-                    Choose <code>Standard</code> shipping and continue to
-                    payment.
-                  </li>
-                  <li>
-                    Enter card <code>4242 4242 4242 4242</code> and complete
-                    the 3DS challenge.
-                  </li>
-                  <li>
-                    Submit the order and assert the confirmation page renders
-                    with order id <code>ord_…</code>.
-                  </li>
-                  <li>
-                    Verify the <code>confirmation-email-webhook</code> fires
-                    within 30 seconds.
-                  </li>
-                  <li>
-                    Verify the order is persisted via the API and starts with{" "}
-                    <code>ord_</code>.
-                  </li>
-                  <li>Cleanup — delete the test order via the admin endpoint.</li>
-                </ol>
-
-                <hr />
-
-                <h2 id="scenario-assertions">Assertions</h2>
-                <p>The scenario asserts on three surfaces:</p>
-                <ul>
-                  <li>
-                    <b>DOM</b> — confirmation page URL matches{" "}
-                    <code>/orders/ord_/</code>, cart badge equals{" "}
-                    <code>&quot;1&quot;</code>.
-                  </li>
-                  <li>
-                    <b>Webhook</b> — <code>confirmation-email-webhook</code>{" "}
-                    receives a <code>200</code> within 30 seconds.
-                  </li>
-                  <li>
-                    <b>API</b> — <code>{"GET /orders/{id}"}</code> returns{" "}
-                    <code>200</code> with status <code>paid</code>.
-                  </li>
-                </ul>
-
-                <h2 id="scenario-failure">Failure handling</h2>
-                <p>
-                  On any assertion failure the run is marked{" "}
-                  <code>failing</code> and the offending step (DOM / webhook
-                  / API) is highlighted in the run detail. Retry once on
-                  transient webhook timeouts; surface a fix-it prompt when
-                  selectors drift.
-                </p>
-              </div>
-            </section>
+            ) : (
+              <section className="panel" style={{ marginTop: 20, padding: 32, textAlign: "center", color: "var(--muted)" }}>
+                <p style={{ margin: 0, fontSize: 14 }}>No test sections or steps parsed in this scenario.</p>
+              </section>
+            )}
           </div>
         )}
 
@@ -943,18 +1520,14 @@ export function TestDetailPage({ testId }: { testId: string }) {
                     >
                       <span
                         className="project-dot"
-                        style={{ background: project.color }}
+                        style={{ background: projectColor }}
                       />
-                      <span>{project.label}</span>
+                      <span>{projectName}</span>
                     </Link>
                   </div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-key">Environment</div>
-                  <div className="kv-val">{project.environment}</div>
-                </div>
-                <div className="kv-row">
-                  <div className="kv-key">Branch</div>
+                  <div className="kv-key">Scenario ID</div>
                   <div
                     className="kv-val"
                     style={{
@@ -962,23 +1535,34 @@ export function TestDetailPage({ testId }: { testId: string }) {
                       fontSize: 12,
                     }}
                   >
-                    {project.branch}
+                    {scenario.id}
                   </div>
                 </div>
+                {scenario.sourcePath && (
+                  <div className="kv-row">
+                    <div className="kv-key">Source Path</div>
+                    <div
+                      className="kv-val"
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 12,
+                      }}
+                    >
+                      {scenario.sourcePath}
+                    </div>
+                  </div>
+                )}
                 <div className="kv-row">
-                  <div className="kv-key">Schedule</div>
-                  <div className="kv-val">Every 30 min</div>
+                  <div className="kv-key">Sections</div>
+                  <div className="kv-val">{scenario.sections?.length || 0}</div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-key">Owner</div>
-                  <div className="kv-val">
-                    <span className="kv-owner">
-                      <span className="avatar">
-                        {project.owner.initials}
-                      </span>
-                      {project.owner.name}
-                    </span>
-                  </div>
+                  <div className="kv-key">Total Test Cases</div>
+                  <div className="kv-val">{totalTestCases}</div>
+                </div>
+                <div className="kv-row">
+                  <div className="kv-key">Total Steps</div>
+                  <div className="kv-val">{totalSteps}</div>
                 </div>
                 <div className="kv-row">
                   <div className="kv-key">Created</div>
@@ -990,11 +1574,11 @@ export function TestDetailPage({ testId }: { testId: string }) {
                       color: "var(--muted)",
                     }}
                   >
-                    {fmtDate(test.createdAt)}
+                    {fmtDate(scenario.createdAt)}
                   </div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-key">Last edited</div>
+                  <div className="kv-key">Last updated</div>
                   <div
                     className="kv-val"
                     style={{
@@ -1003,46 +1587,23 @@ export function TestDetailPage({ testId }: { testId: string }) {
                       color: "var(--muted)",
                     }}
                   >
-                    Aug 28, 2024
+                    {fmtDate(scenario.updatedAt || scenario.createdAt)}
                   </div>
                 </div>
-                <div className="kv-row">
-                  <div className="kv-key">Tags</div>
-                  <div className="kv-val">
-                    <span className="kv-tags">
-                      <span className="kv-tag">
-                        stripe
-                        <span
-                          className="kv-tag-x"
-                          aria-label="Remove"
-                        >
-                          ×
-                        </span>
+                {allTags.length > 0 && (
+                  <div className="kv-row">
+                    <div className="kv-key">Tags</div>
+                    <div className="kv-val">
+                      <span className="kv-tags">
+                        {allTags.map((tag) => (
+                          <span key={tag} className="kv-tag">
+                            {tag}
+                          </span>
+                        ))}
                       </span>
-                      <span className="kv-tag">
-                        checkout
-                        <span
-                          className="kv-tag-x"
-                          aria-label="Remove"
-                        >
-                          ×
-                        </span>
-                      </span>
-                      <span className="kv-tag">
-                        e2e
-                        <span
-                          className="kv-tag-x"
-                          aria-label="Remove"
-                        >
-                          ×
-                        </span>
-                      </span>
-                      <button className="kv-tag-add" type="button" aria-label="Add tag">
-                        + tag
-                      </button>
-                    </span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </section>
           </div>
@@ -1057,37 +1618,45 @@ export function TestDetailPage({ testId }: { testId: string }) {
             aria-labelledby="tab-automation"
             data-od-id="panel-automation"
           >
-            <div
-              className="at-state-toggle"
-              role="tablist"
-              aria-label="Automation test state"
-              data-od-id="at-state-toggle"
-            >
-              {AT_STATES.map((s) => (
-                <button
-                  key={s.id}
-                  className={atState === s.id ? "is-active" : ""}
-                  data-state-target={s.id}
-                  role="tab"
-                  aria-selected={atState === s.id}
-                  onClick={() => setAtState(s.id)}
-                >
-                  <span className="dot" style={{ color: s.color }} />
-                  {s.label}
-                </button>
-              ))}
-            </div>
-
-            {atState === "empty" && <ATStateEmpty test={test} />}
-            {atState === "running" && <ATStateRunning test={test} />}
+            {atState === "empty" && (
+              <ATStateEmpty
+                test={testObj}
+                onGenerate={handleGenerateAutomations}
+                isGenerating={isGenerating}
+              />
+            )}
+            {atState === "running" && (
+              <ATStateRunning
+                test={testObj}
+                jobId={activeJobId}
+                jobStatus={jobStatus}
+                onDismiss={() => {
+                  setActiveJobId(null);
+                  setIsGenerating(false);
+                }}
+              />
+            )}
             {atState === "success" && (
               <ATStateSuccess
-                test={test}
-                steps={STEPS_TEMPLATE.slice(0, test.steps)}
+                scenario={scenario}
+                test={testObj}
+                onRegenerate={handleGenerateAutomations}
+                isRegenerating={isGenerating}
                 recentRuns={RECENT_TEST_RUNS}
               />
             )}
-            {atState === "error" && <ATStateError test={test} />}
+            {atState === "error" && (
+              <ATStateError
+                test={testObj}
+                errorMessage={
+                  generationError ||
+                  scenario.error ||
+                  scenario.sections?.flatMap((s) => s.testCases || []).find((tc) => tc.automationTest?.errorMessage)?.automationTest?.errorMessage
+                }
+                onRetry={handleGenerateAutomations}
+                isRetrying={isGenerating}
+              />
+            )}
           </div>
         )}
 
@@ -1142,6 +1711,19 @@ export function TestDetailPage({ testId }: { testId: string }) {
             })}
           </section>
         )}
+      </div>
+    </div>
+  );
+}
+
+function StatePane({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="app-pane">
+      <div className="page-head">
+        <div className="page-head-text">
+          <h1 className="page-title">{title}</h1>
+          <p className="page-subtitle">{message}</p>
+        </div>
       </div>
     </div>
   );

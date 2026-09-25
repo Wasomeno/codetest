@@ -272,16 +272,18 @@ export const testScenarioApi = {
 
   generateScenarioAutomations: async (
     id: string,
-    projectId: string,
-    payload: GenerateScenarioAutomationsPayload = {},
-  ): Promise<GenerateScenarioAutomationsResponse> => {
-    const response = await api.post<GenerateScenarioAutomationsResponse>(
-      `/projects/${projectId}/test-scenarios/${id}/automations/generate`,
-      {
-        credentials: "include",
-        body: JSON.stringify(payload),
-      },
-    );
+    projectId?: string,
+  ): Promise<{ message: string; id: string; jobId: string; caseCount?: number }> => {
+    const url = projectId
+      ? `/projects/${projectId}/test-scenarios/${id}/automations/generate`
+      : `/test-scenarios/${id}/automations/generate`;
+    const response = await api.post<{ message: string; id: string; jobId: string; caseCount?: number }>(url);
+    if (!response.success) throw new Error(response.error);
+    return response.data!;
+  },
+
+  getGenerationJob: async (jobId: string): Promise<any> => {
+    const response = await api.get<any>(`/generation-jobs/${jobId}`);
     if (!response.success) throw new Error(response.error);
     return response.data!;
   },

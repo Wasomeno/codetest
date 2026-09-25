@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8cc947ca8cda057cabf58c2f110c8d44b56b47b10423246929bc69c4b95397f9",
+  "claims": [
+    {
+      "id": "claim_259090929fec4f6d8352e7ae650b31b4",
+      "statement": "The login page asks POST /auth/login for a GitLab OAuth URL, supplies a frontend /login redirect URL that retains the intended destination, and then performs a full-page navigation to the returned URL.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/auth.ts#L1-L6",
+          "version": "repo-lines-v1:sha256:29987d2f5b4f62c75e5793221ccd0319e1915fff92ec41333f06b0a49f130f28:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmRjNWU4YzAzNmZlM2ZhNTEzMGQ0YjlkZWEwNzY3OTc2NGVkMDcxNzIyMjRmYzJlYWEwZDk0ZjE3OGZhYTYxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODYyNDA5NzUzZmVmMDY2YjRjZTA0OTk5MTdmNjc1YTQ5MWZiMGZlMjk0YjE2NzIxOGNhYWU5MDEwYzJjNmZjNSJ9"
+        },
+        {
+          "resource": "repo://src/pages/login.tsx#L34-L63",
+          "version": "repo-lines-v1:sha256:83d433ed921e5b69e35c3aac285466646abe67014fa9dd4915337e15362d995b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmZjRlOTQ1ZmU1NGJiNDg3YmUxZDc3Yjk1YWMwNTg0NDE3NzU2NjIyMzg0NzQzN2NkMjFiOGUwMzdiYTVkZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNmI0YzdiNGEzYjI4MTdkODQ0OGI3YmRjMmEzZmRjZTdiMjI2Y2ZkMDNkZDkwY2ViZTQ5NTljM2FlYmYzMjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4ZjEwMDY5M2U3MGQzY2RhOTQ5YmNkNGQ3MjQzNjgzMDJiOWNmYTI4OWY5NjM0YTZmM2Q1NjBhZGY5NDQ1YWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_80efdf9ccda04853a77b2ab0e9645691",
+      "statement": "Browser bootstrap extracts session_id before React mounts, removes the query parameter with history.replaceState, and stores it as qa_webapp_session_id; it is disabled during SSR.",
+      "evidence": [
+        {
+          "resource": "repo://src/lib/auth-bootstrap.ts#L1-L26",
+          "version": "repo-lines-v1:sha256:c93545c7ceabc708062fe39d916e8221428edfde5f48fc64bb45f03715005452:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/utils/session.ts#L1-L28",
+          "version": "repo-lines-v1:sha256:beb09c6d682de815b7352de9d92bd5be83ff52d0ef2832efe929c179c1fa5d04:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzNTIyMjgwZDEyOTMwOWNlZDRhNDhmNWFmYTZlNjBjZjAyOGRjMmJhODhkYzAxOWY0ZmE2YjMxODU3NzhmMzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fed41655a1c44f4480fd2bfc29c679f7",
+      "statement": "The login route redirects an authenticated user to its validated redirect search value or to /dashboard.",
+      "evidence": [
+        {
+          "resource": "repo://src/routes/login.tsx#L16-L46",
+          "version": "repo-lines-v1:sha256:d773225ce52f4fc9687ac0ea9d87b0bf51a06614a25c3abaf17dcd829fb84c90:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2YjA5MjkyOTRjMGQ5OTQ2ZDY3MWM3NDliZjIzNWYwY2U0NjU4NGIzZGU0YjllZGM2YWZiOTIwMGU5MTYxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MjY3OTM1ZmM2MzM0NjVkODQ4YjQwYTRlZDY5NjdlN2I3YTMyM2Y4MWNkNTNjMTEwYWUyMTAyOTY4N2FhMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkNzQxZTU4NmM4ZGRhZWEwM2I0NGM1NDY3MTgzNDc4NmQzNzgzODQ2YjMwMWMxNWE2MzY3MTQyMWZhMWFkZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_93fdcc0ea9034dc884e273461363af2f",
+      "statement": "Session user state hydrates from a localStorage snapshot, reconciles against the current-user query, synchronizes across tabs, and clears the snapshot on a query error.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks/use-session-user.ts#L40-L101",
+          "version": "repo-lines-v1:sha256:c7d34074289470deb7a6b7a4b5f178eb9c46f733525c676efa31db240f0611b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkMDM3MDQ2YWQ3MzkzN2FkYjE0Mjc1MzZmNmRjNTc2MjQ5YTliNDk4MzAzYmFhOGM2MzFkNjBkOTUyMDk5MTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ODllYTg2MGZhYjg1YWYzODNmNDE4MzQzMjQ0ZjE3ODMwZTI2ZjBmOTY1NzVlNzEwYjdjMTliNjgzN2QwNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzN2E1ZGViNWU0OWNhODUzZjc1OTY3NThmYmI0MWFkMDJjMTkyNDI4MmM0MmJiYTZmM2Q5NDA5MGIxNDU4ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0NTdjOTRmNzJlN2I1YzIwNzYxMWE5MzZkNGQzNjc3ZGY5OTY5ZjQxOTAwYmU0OGU0ZGJlYmU5N2RhMjBjZmEifQ"
+        },
+        {
+          "resource": "repo://src/hooks/use-session-user.ts#L7-L18",
+          "version": "repo-lines-v1:sha256:ed40b1d7345fe9fee8885dcc2a80ccf1f5ab7cd2ce21d1f73e60343b7cec85f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiN2Q1OTkyODJmYjBjNmI5ODk2NWIxMGQ5YjZiZWYxMjczYzFmOWNjNzk1ZjJmZTkyODRmODk4ZWQ3ZTM2ZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNjdhOWJjNzUyZjNmZGFmOTUzYzViZDUzNWMyOGRhNmIzOTlhNTdiNGViYjM4NjY3NDNkZWI5YTVkMDFiZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0ZDZkZDVmYjZkMDdiY2NkNWVlN2M1OTUwZWRkNzMzNDkzNDBlOWRjOTliNzQzYTYzMDdmNWRlODNjMzc3NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExNzk3NTRlYzI0NTI4NzM4MDkxMGQxMzhiYTc3NTk0ODJjZTMwNDRlNjM3Y2Y2ODY0ZTdlM2QyYmEwMTc2MGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd19558ccac24bdb9dab396de9e9c5be",
+      "statement": "The current-user query refetches on mount, has a 60-second stale time, and disables retries, while AuthBootstrap prefetches the same user key when a stored session exists.",
+      "evidence": [
+        {
+          "resource": "repo://src/components/AuthBootstrap.tsx#L17-L38",
+          "version": "repo-lines-v1:sha256:fa4e3ffdfb18af19e9e21e124126c6fd75608d7c910ee6609449f697b0191a07:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2NDg2MGUzNjlmMWY4NWViMWFmZWZjZDUxMmI5MjBiMWI0MDllZTlhOTRiYzllMzI2MDEwYzM4ZmNhODQxNmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5YjdmMDJjMjFhY2I5MGZiZjZlMjM3NTViNGNhNzYxYTM4MTEyODA3Y2NjN2Y0ZGI0ZThiY2Y1NDYwYTg4OGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ5ZjIxMDNiMjYxZTBmZGZiYjMwYTNjMDkyMmVjYTY0ZmVlOTY0OWE4ZWMzNzk4Y2QzNjQ4ZjJlNDI0MjY3MDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/hooks/api/useCurrentUser.ts#L16-L29",
+          "version": "repo-lines-v1:sha256:928d091c3eb7614220e399d542b93f784397d80025312433cdb8087fe296d004:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkMjBhNTIwYTYzZWFlMmU4NWI1NGFkMTNmZWMxNmY3YjJiMzMwNTI1ZmJmMDhjNzFlZjJiYzUwZDZhZmYzNzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4OWM5YWFjZTdmMzlmZDlhNGRiNmY4ZDhjNWUyNGM2MWFhMzk3OWQ1ZDhjZWRlMDU3MDgyZjg1MDlmNGZlODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d05adb0eb64f479fbdc0d858335edf10",
+      "statement": "The route guard only checks protected routes in the browser because localStorage is unavailable during SSR; an absent session redirects to /login with the attempted location.",
+      "evidence": [
+        {
+          "resource": "repo://src/routes/__root.tsx#L25-L58",
+          "version": "repo-lines-v1:sha256:13cf86e1977becb727b108dc1df5d9f893a075ffbbad3d7505361c3615959c3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMmM5M2UwZDFhYmRlZTM5M2UxYTU0MzUyODZmZDMwMmQyMGQ1ZmQwMmVhZGVmMzFjYmNiZTc4YTdiZDk5ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0YTVjMTc5MzdkODQxYmIzYWIwYmM1ODUwNzI0OWUwZmRhY2VjZWExMDk5YzgxYTA2OTE5Nzc2Mjk4NTNlNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4YjE4MGVlZDczODI2ZTdiNjZlYTU3YTJhODAyZjU0NGYzOTg2ZTI1OTIwM2FmNzBkZTQ4OWRiNWE3NmQ4NWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a4a21a77a6dc43c08f10c62be60ff10b",
+      "statement": "Successful logout clears the session ID and entire React Query cache, broadcasts auth_logout, and the sidebar compatibility hook also clears shared user context.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks/api/useLogout.ts#L15-L33",
+          "version": "repo-lines-v1:sha256:72d2d9217f9366870691c3eab4613de666dd6f18b27cb6abd5b775aeda617bda:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5YjQ5NWMxZmFlODI1MzY0NjM3ZGRhMmExNjAwNDM3MDQ2ZDdiNzY0M2VhZDc0MTJmNDVkNDI0YzI3MTNkYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhZmIzN2M2OWQyZTQ3NTdmZDRhYWVmY2UxYjMwY2IzY2Q2YjQwM2FhYTE2MzExODY1MWU1MGUxYjdiMjc0YWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/hooks/use-logout.ts#L13-L26",
+          "version": "repo-lines-v1:sha256:6264778692f6afc4b5bf8e4316ece43b6cf64b1b8065724ca66f70073886a823:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5YjQ5NWMxZmFlODI1MzY0NjM3ZGRhMmExNjAwNDM3MDQ2ZDdiNzY0M2VhZDc0MTJmNDVkNDI0YzI3MTNkYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzMThhNDYxNzNhMWYwZWUzYTc3M2YxZDBjMmY2ZmQ2MmJlMzhkOTVlZTVmY2M1N2YzOWQyYWE3ZmUyOGY2MDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1ca3e3bbadc640a8b68e40afd486805e",
+      "statement": "A 401 response clears session_user and qa_webapp_session_id, emits a storage event, and redirects the browser to /login unless it is already there.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/api.ts#L69-L96",
+          "version": "repo-lines-v1:sha256:e1b2349410dff984fcddb19b12056897a66a0770d1edd55526b60ee1b1b12b3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMzVhMzFlZjEzYWQyZTJlZDgwNWIyYjAxMmMxMWU0NDc1NWM1N2U2OWM0MTRiNjQ5MWQ2MjQwMmQwM2Y0YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlMzNkYzczMWU3ZDA3YjFmMGMwNWNmZWJkN2UxOTIyMDIzZTYwNzdiYzBhZTdiYTMwMTQ4ZjUwODMzYTI1YTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzODMxOWRkMTU1MzRlNjQ0OTMxMDFhNzg2ZTdmYzI4MGVkNzVjOTY4NzliZjlmNzkzN2NhNDY1OTZhMjk5ZTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmZWNlYTVhYjNkOWUxYmYzZTNiYzNiZDVlNGY4YmY1MzYxZjQyOTZmNjAyNjU0MTM1NDRkYWQ3MDljYTU4NzQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}

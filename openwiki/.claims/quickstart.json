@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ccb1d9f18acf92657c67d15200648a99d7d5fdefc5086418a5d557a8e2dd7f36",
+  "claims": [
+    {
+      "id": "claim_0060ceeb26774b8bab63745470acd7fe",
+      "statement": "codetest is an ESM React/TanStack Start frontend whose declared Bun scripts run development on port 3000, generate routes, build, and preview.",
+      "evidence": [
+        {
+          "resource": "repo://package.json#L1-L13",
+          "version": "repo-lines-v1:sha256:ba5d850545f3ae356eeaefccb0802fde5852a1f12ebfb323cbb087fa5310bc46:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyMTFmYTliYzRjZTkyMTZiZjk0ZmY5MWZkYjJiMjJjZjNlZTQ2ODE4OWJjZWRmM2E0OTU0ZGI5MGY2MGFiOTkifQ"
+        },
+        {
+          "resource": "repo://package.json#L14-L39",
+          "version": "repo-lines-v1:sha256:d08af0b266c13ca2166d17e8d02ec99b59511d23e70eb7cb886a322987cd9845:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhM2I0NjlkOWUwOTc1NzIyNDY2NjczNGM5ZWY3YjI1NGQ4ODUzNGY1ZDViYjcwOTg5NjA4MDVjNTUzZGMzMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1NjYwYWIwYmM3YmQxMTUxMzY1NTQxYTkyMjMwN2MzNTQyYjI5YmZlNzRjOGQ1NWFiMjlhZTY1NDVmYWQ4YzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyNWZiMjJjOWIwNjFiYmVhYjk3Njc2Yzk0ZmU1M2I3OThlNDlkOTNmMDAzNWMwNGM1Yjg5YzBmNzhmNDBjNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlODYwMGZjMTk1NzIxMTI1ZjY4YTE4YjYxYmQyNzE3ZDI4OGRmYTllNzcxYTAzOWRmNmU5NzYwZWY2MmU2ZDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9c2864dcf9a2432c9597ef1edcd3f6b3",
+      "statement": "Local Vite development proxies /api to VITE_API_PROXY_TARGET or http://localhost:4000, while browser requests use VITE_API_BASE_URL when supplied and otherwise use /api.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/api.ts#L16-L27",
+          "version": "repo-lines-v1:sha256:4579c48caa89cf84980ffcfe83f4e6c5942652ef250508f2c7ef7b09d070f7b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNWYxNDlhMDYzOTk1NzRkZDUyNzUzMmMyNTgyNjEzYTU0NzZlZWRkNThiZjgzN2MwZWZhZWYzNmFjZjM0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjZThiZDY0ZDVmOWE3MDVjMTZkMDAyZGIwODhlNzliZGU5YWVkMzVjMmRjOWQ5Mzg1NzY4ODkwOGFjMWU0OTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzYWEyNDNkZGE4NzVlMzQxNGU0NDA0YWM3MTE5ZWExODNjZDAxZmM0NzdiMzU5ZDI0MjQ5OWViOGJiNTAxYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1MjM1ZmViNTg2YjgwN2VhZDNmMjVhOWRlMDJmZGVmZmIyOWIxNTc5NTk1ZTYzNDBmNjljZjU0ZjdhNDdkNWIifQ"
+        },
+        {
+          "resource": "repo://vite.config.ts#L9-L25",
+          "version": "repo-lines-v1:sha256:dcc6b454e2877024c58441930ca79ba237611174432960d69d22433bb9110ae7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzODQ1NWI0NDY2NjBhZmIwMGNhYTFkNGFmMGViNmQwZGYzYjBjMTU3MzE5NWEyY2E5NGEzZWIwMjRmZTJlNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzNGVhOGE0MDcyNWU2MDU2MTJiMmE0ZmRlZjgwMmE2ZDllNTdmYzU3NjI4Njk4MTRhOTMwMmRlNGUxNGM4OWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmYTg4NDAwZDlkMzMxNWQ2NTZmNmI4ZTJiOTNjNzFiOThjYmVhNjJkMjhjYzMxZWQ4ODlmNjllODA3ZTM1MjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2c78b4b1d7ab4ef6be8907a096e52d6e",
+      "statement": "Router startup imports authentication bootstrap and the generated route tree, while the root document provides query/session state and wraps ordinary protected content in AppShell.",
+      "evidence": [
+        {
+          "resource": "repo://src/router.tsx#L1-L21",
+          "version": "repo-lines-v1:sha256:ab56d4fda85392e480841b7317bf14b024cb340c244cd2410c8cb4d95b58d095:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjYWMxNzFiNDFiMzZkYzUyNjY1Zjc2ODIyZWZlODQ5ZDNhZTgzOWJmMjg5ZGE0MTc0ZGFjODUwNmI4ODM2OWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ODE3NTVhMTM2YWNiMDRlMjgyY2ZjNGFhZWI5M2RhNjAxNmQ0ZTUxMDJkY2YxNjRiMGYwNTRiMTdiYTJjNWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1OGIxZmJhMmRiNmM0NTRjZTcxMjUwZDhmNWRhNDRlZTM3NzkyNGMyNDA3OGMyOGYxMWQ3YjQ2MDZiZWRjNDYifQ"
+        },
+        {
+          "resource": "repo://src/routes/__root.tsx#L73-L98",
+          "version": "repo-lines-v1:sha256:a2337b4359d39389f2a5a655ffc74d692c53e1e84aa2219a2aff10c0a9505c9c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3MjE2ZThlOWMwYTFhNjhkMDZjMmZiYWE1ZmQyMTM5NDgyYjhlZmQwYTE5MzE1YjkxNWU2Y2NlODQ5ZDg5ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MjY3OTM1ZmM2MzM0NjVkODQ4YjQwYTRlZDY5NjdlN2I3YTMyM2Y4MWNkNTNjMTEwYWUyMTAyOTY4N2FhMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjM2NhZTcxMDEwYTNhNWU3MzY5ZWQwNGVkZjA0NzlmYjg1MjFiYzZhMjZjOTQ4ZGM1M2EwZmI2NWYzYzNhYmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7a2df7de7321419a90ece3a9527a6fc9",
+      "statement": "Workspace project and specs screens have backend-connected API/query flows for project lifecycle, GitLab repository files, and issue creation.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/project.ts#L39-L163",
+          "version": "repo-lines-v1:sha256:4ccca9f8c918a0895fa92c47d66d380a391e663d07ad4cb0c97645b87f5b7bfd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhMGY1NTE5ZWUxZTZlNDBkYzcyNmNkNTllNjUwMjdiZjZiNWYxMWY0Njg3Y2NlOTI3YWEzNThlYzFkYjUxMzQ0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0YjY1ZmFlYmUzZDdiZGIwNTcxYTY3MjhiMjhhZWViN2Q0ZDA0MzZmYzllZGJjZTliODA1YTg5Y2NiNDdjZDE5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2NDdiZjBiZDBlOTQ2ZTAzMzI2YmQxNWQxYmU3ZDJjY2UwNmM2MzA0NjQ4MmE5MjEzZWQ1NzY0M2ExODJjYmRmIn0"
+        },
+        {
+          "resource": "repo://src/api/specs.ts#L59-L175",
+          "version": "repo-lines-v1:sha256:915edf6db52ab808e326674b8a5c838eb3c16d863592f6953747ba3bf130f145:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZWRjN2I3NzRkNDA4YjczZjYyYWM1ZjU0YWViYjU0ZDQxOGZjZmQ0YjRkMmRjY2QwZTNiMjY4YWM1ZWIyMGUzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkYjIzYWUwNThmNzdiZjkzOTUzOWY1MDE3OTMzN2VhYTNhOTc2YTZkOGFjMjJiMWQ4YmI1NzNkZmEwNGQ0ZGNmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3Mjc3NDk1NTZmYzUwYTM1NGVjYzU2ZTYzYmYxYTdhNTYyOGE5ODA3OTkyZjVmNmYxYjQwNDg2OTM0MjUxOWVkIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_466b74db0b7541c3a4cb8c310a7941ba",
+      "statement": "The current tests list, test detail, and run detail screens import their visible scenario/run data from mock-data-new.ts rather than testScenarioApi.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/run-detail.tsx#L1-L10",
+          "version": "repo-lines-v1:sha256:84d6ecdd300dd1f8966d59d7b22dc2fa41172c5e228dad238a239a88ed420230:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3NzI3YWJlZmM0Yjk0ZjVkYjFmYmM4ZTA4OGZlZDgzZjA0MDhmODA1YTlkM2VkM2NmYTQ5Mzg2ZjI2MmI4N2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNmE1MjBjYjY2YWFkNzZhYmNhYjQ5Y2E0MGNlM2FhZDBkMTRmNDNlMmJiNGFmYTUyNWJmZmQzNTQ2MDViYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmYTU0ZDY5MmYxYTVkMmQ4N2JkMjNiOGRhMDUwNWJlMWNiNmVhZjEwMmI2MjMyNjAyMmViOGJhOGFlM2NhYWUifQ"
+        },
+        {
+          "resource": "repo://src/pages/test-detail.tsx#L1-L12",
+          "version": "repo-lines-v1:sha256:12c3c67ddef1f5f1151acb5be89fcb03e818c64fa8a8c17dea99f17eb5b3a524:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YzZhMGRlYTZhNDliYWU5MDVhZjJhZDg3M2QxNWIwMTY1NzY4NzljOWQ2YmI4ZWIyMDhiNDMyNDRiMGExYzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3OWRmMjJiOTU5OTk1NThhNjkyODkxNDljMzVkYTA0NjRhZDJlNzY4ZmRlZTA4OWFjZjYzYTkxMDc5Y2IxMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmNTAyMGU4OTk1ZGRhZmY5ODZmMzJlYWQ0OWViZTVhMTQwMzc1NDM3M2VmYjI0MjUyYWI1ZDQ2ZDlkNTMxMDYifQ"
+        },
+        {
+          "resource": "repo://src/pages/tests-list.tsx#L1-L6",
+          "version": "repo-lines-v1:sha256:2c687079d906e66e47eb0b039ac5e91a5b5783fccd6f828788b75e6a28224948:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmM4NWVjMGM1M2Q0YjMxMmFjOWVlNmIyNDA5Mzg4YWFkZjg1ZmQ1Mjk1NDMwMTE1YzQ1MWJkZmE5ODcyMzhmNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzhkZDdhZjU3MzA0MzZiNjUwYzFkM2U3YjBhMmU4N2M2MzE5MDRjZGYwN2I5ODVjZmVjNDI0M2QyNjM1NmUzNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzNlMzdjOTU0YWRhYTdiZTgyOWVjMjEwZTExZmZiNjFlZTdkYzBjNmI4YzM0YzFkYTcwMDhjNzdhZjhjZTNkNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_713e66ee3e5c487d922ba7eb32826424",
+      "statement": "The repository declares no test or lint package script, so its build command is not an automated behavioral test suite.",
+      "evidence": [
+        {
+          "resource": "repo://package.json#L8-L13",
+          "version": "repo-lines-v1:sha256:750434ae2091285940a48dc65e40165ce39905ed14737db2feb338651f5babc1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4MzNkNTk0OWMwM2E0MGNhOTUyNDkxNjEwYTY2NTk2NDRiM2FhNDY2MzYyZjc5OTAyMGRiZjE5ODE1NDdkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTcyMzY5MDY4YmQ0YWEwZmM1OGVjMDYxOGFmNDcxYjdkMzg3MTIwMDRhYjJjYmI1N2U4NjE5MDg1NGFjNGZlNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjIxMWZhOWJjNGNlOTIxNmJmOTRmZjkxZmRiMmIyMmNmM2VlNDY4MTg5YmNlZGYzYTQ5NTRkYjkwZjYwYWI5OSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}

@@ -9,6 +9,13 @@ import { STAGGER, StaggerRow, StaggeredDelta } from "~/components/charts/dashboa
 import { useProjects } from "~/hooks/api/useProjects";
 import { colorForName } from "~/lib/map-app-project";
 import { qk } from "~/api/queryKeys";
+import {
+  Skeleton,
+  StatCellSkeleton,
+  RecentProjectRowSkeleton,
+  CoverageBarSkeleton,
+  ByProjectRowSkeleton,
+} from "~/components/Skeleton";
 import type { AppProject, ProjectDashboard } from "~/types/project";
 
 interface ProjectRow {
@@ -155,81 +162,88 @@ export function DashboardPage() {
 
         {/* Stat strip ----------------------------------------------------- */}
         <div className="stat-strip" data-od-id="dash-stats">
-          <StatCell
-            label="Projects"
-            valueNode={
-              loadingProjects ? (
-                <span style={{ color: "var(--muted)" }}>…</span>
-              ) : (
-                <AnimatedNumber value={projects.length} />
-              )
-            }
-            delta={
-              aggregates.dashboardsPending
-                ? "loading metrics…"
-                : `${aggregates.dashboardsReady} with metrics`
-            }
-            direction="up"
-            index={0}
-            reduce={reduce}
-          />
-          <StatCell
-            label="Open issues"
-            valueNode={
-              aggregates.dashboardsPending && aggregates.dashboardsReady === 0 ? (
-                <span style={{ color: "var(--muted)" }}>…</span>
-              ) : (
-                <AnimatedNumber value={aggregates.openIssues} />
-              )
-            }
-            delta={
-              aggregates.issuesOpenedToday + aggregates.issuesClosedToday > 0
-                ? `+${aggregates.issuesOpenedToday} / −${aggregates.issuesClosedToday} today`
-                : "across issue repos"
-            }
-            direction="down"
-            index={1}
-            reduce={reduce}
-          />
-          <StatCell
-            label="Test scenarios"
-            valueNode={
-              aggregates.dashboardsPending && aggregates.dashboardsReady === 0 ? (
-                <span style={{ color: "var(--muted)" }}>…</span>
-              ) : (
-                <AnimatedNumber value={aggregates.testScenarios} />
-              )
-            }
-            delta={
-              aggregates.recordings > 0
-                ? `${aggregates.recordings} recording${aggregates.recordings === 1 ? "" : "s"}`
-                : "linked to projects"
-            }
-            direction="up"
-            index={2}
-            reduce={reduce}
-          />
-          <StatCell
-            label="Avg pass rate"
-            valueNode={
-              aggregates.avgPassRate == null ? (
-                <span style={{ color: "var(--muted)", fontSize: 18 }}>—</span>
-              ) : (
-                <AnimatedNumber
-                  value={aggregates.avgPassRate}
-                  format={(n) => `${n.toFixed(1)}%`}
-                />
-              )
-            }
-            delta={
-              aggregates.avgPassRate == null
-                ? "no recent run data"
-                : `${aggregates.passRateCount} project${aggregates.passRateCount === 1 ? "" : "s"} · 7d`
-            }
-            direction="up"
-            index={3}
-            reduce={reduce}
-          />
+          {loadingProjects ? (
+            <>
+              <StatCellSkeleton index={0} reduce={reduce} />
+              <StatCellSkeleton index={1} reduce={reduce} />
+              <StatCellSkeleton index={2} reduce={reduce} />
+              <StatCellSkeleton index={3} reduce={reduce} />
+            </>
+          ) : (
+            <>
+              <StatCell
+                label="Projects"
+                valueNode={<AnimatedNumber value={projects.length} />}
+                delta={
+                  aggregates.dashboardsPending
+                    ? "loading metrics…"
+                    : `${aggregates.dashboardsReady} with metrics`
+                }
+                direction="up"
+                index={0}
+                reduce={reduce}
+              />
+              <StatCell
+                label="Open issues"
+                valueNode={
+                  aggregates.dashboardsPending && aggregates.dashboardsReady === 0 ? (
+                    <Skeleton width={48} height={22} borderRadius={4} />
+                  ) : (
+                    <AnimatedNumber value={aggregates.openIssues} />
+                  )
+                }
+                delta={
+                  aggregates.issuesOpenedToday + aggregates.issuesClosedToday > 0
+                    ? `+${aggregates.issuesOpenedToday} / −${aggregates.issuesClosedToday} today`
+                    : "across issue repos"
+                }
+                direction="down"
+                index={1}
+                reduce={reduce}
+              />
+              <StatCell
+                label="Test scenarios"
+                valueNode={
+                  aggregates.dashboardsPending && aggregates.dashboardsReady === 0 ? (
+                    <Skeleton width={48} height={22} borderRadius={4} />
+                  ) : (
+                    <AnimatedNumber value={aggregates.testScenarios} />
+                  )
+                }
+                delta={
+                  aggregates.recordings > 0
+                    ? `${aggregates.recordings} recording${aggregates.recordings === 1 ? "" : "s"}`
+                    : "linked to projects"
+                }
+                direction="up"
+                index={2}
+                reduce={reduce}
+              />
+              <StatCell
+                label="Avg pass rate"
+                valueNode={
+                  aggregates.dashboardsPending && aggregates.dashboardsReady === 0 ? (
+                    <Skeleton width={48} height={22} borderRadius={4} />
+                  ) : aggregates.avgPassRate == null ? (
+                    <span style={{ color: "var(--muted)", fontSize: 18 }}>—</span>
+                  ) : (
+                    <AnimatedNumber
+                      value={aggregates.avgPassRate}
+                      format={(n) => `${n.toFixed(1)}%`}
+                    />
+                  )
+                }
+                delta={
+                  aggregates.avgPassRate == null
+                    ? "no recent run data"
+                    : `${aggregates.passRateCount} project${aggregates.passRateCount === 1 ? "" : "s"} · 7d`
+                }
+                direction="up"
+                index={3}
+                reduce={reduce}
+              />
+            </>
+          )}
         </div>
 
         <div className="dash-grid">
@@ -261,9 +275,9 @@ export function DashboardPage() {
               </div>
 
               {loadingProjects ? (
-                <div style={{ padding: "12px 0", color: "var(--muted)", fontSize: 12 }}>
-                  Loading projects…
-                </div>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <RecentProjectRowSkeleton key={i} index={i} reduce={reduce} />
+                ))
               ) : recentProjects.length === 0 ? (
                 <div style={{ padding: "16px 0", color: "var(--muted)", fontSize: 13 }}>
                   No projects yet.{" "}
@@ -298,10 +312,28 @@ export function DashboardPage() {
                         {row.project.name}
                       </div>
                       <div className="recent-project" style={{ textAlign: "right" }}>
-                        {row.loading ? "…" : (row.dashboard?.openIssues ?? 0)}
+                        {row.loading ? (
+                          <Skeleton
+                            width={20}
+                            height={12}
+                            borderRadius={3}
+                            style={{ marginLeft: "auto" }}
+                          />
+                        ) : (
+                          row.dashboard?.openIssues ?? 0
+                        )}
                       </div>
                       <div className="recent-when" style={{ textAlign: "right" }}>
-                        {row.loading ? "…" : (row.dashboard?.testScenarios ?? 0)}
+                        {row.loading ? (
+                          <Skeleton
+                            width={20}
+                            height={12}
+                            borderRadius={3}
+                            style={{ marginLeft: "auto" }}
+                          />
+                        ) : (
+                          row.dashboard?.testScenarios ?? 0
+                        )}
                       </div>
                       <div style={{ textAlign: "right", color: "var(--muted)", fontSize: 12 }}>
                         {fmtRel(row.project.updatedAt)}
@@ -321,9 +353,16 @@ export function DashboardPage() {
             </div>
             <div className="panel-body">
               {loadingProjects || (aggregates.dashboardsPending && rows.length > 0) ? (
-                <p style={{ color: "var(--muted)", fontSize: 12, margin: 0 }}>
-                  Loading project metrics…
-                </p>
+                <div style={{ display: "grid", gap: 10 }}>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <CoverageBarSkeleton
+                      key={i}
+                      index={i}
+                      reduce={reduce}
+                      width={["72%", "48%", "64%", "36%"][i]}
+                    />
+                  ))}
+                </div>
               ) : rows.length === 0 ? (
                 <p style={{ color: "var(--muted)", fontSize: 12, margin: 0 }}>
                   Add a project to see scenario and issue coverage here.
@@ -348,9 +387,9 @@ export function DashboardPage() {
           </div>
           <div className="by-project-list">
             {loadingProjects ? (
-              <div style={{ padding: 12, color: "var(--muted)", fontSize: 12 }}>
-                Loading…
-              </div>
+              Array.from({ length: 4 }).map((_, i) => (
+                <ByProjectRowSkeleton key={i} index={i} reduce={reduce} />
+              ))
             ) : byProject.length === 0 ? (
               <div style={{ padding: 12, color: "var(--muted)", fontSize: 13 }}>
                 No projects to rank yet.
@@ -365,15 +404,13 @@ export function DashboardPage() {
                     : d
                       ? Math.min(100, (d.testScenarios ?? 0) > 0 ? 40 + Math.min(d.testScenarios, 30) : 8)
                       : 0;
-                const counts = row.loading
-                  ? "loading metrics…"
-                  : d
-                    ? `${d.openIssues ?? 0} open issues · ${d.testScenarios ?? 0} scenarios${
-                        d.recordings ? ` · ${d.recordings} recordings` : ""
-                      }${
-                        d.fixSessions ? ` · ${d.fixSessions} fix sessions` : ""
-                      }`
-                    : "metrics unavailable";
+                const counts = d
+                  ? `${d.openIssues ?? 0} open issues · ${d.testScenarios ?? 0} scenarios${
+                      d.recordings ? ` · ${d.recordings} recordings` : ""
+                    }${
+                      d.fixSessions ? ` · ${d.fixSessions} fix sessions` : ""
+                    }`
+                  : "metrics unavailable";
 
                 return (
                   <StaggerRow
@@ -398,19 +435,36 @@ export function DashboardPage() {
                         />
                         {row.project.name}
                       </span>
-                      <span className="by-project-counts">{counts}</span>
-                      <span className="by-project-rate">
-                        {row.loading
-                          ? "…"
-                          : rate == null
-                            ? "—"
-                            : `${rate.toFixed(1)}%`}
+                      <span className="by-project-counts">
+                        {row.loading ? (
+                          <Skeleton width={140} height={12} borderRadius={3} />
+                        ) : (
+                          counts
+                        )}
                       </span>
-                      <ProjectBar
-                        percent={row.loading ? 0 : barPercent}
-                        color={row.color}
-                        delay={reduce ? 0 : i * STAGGER + 0.1}
-                      />
+                      <span className="by-project-rate">
+                        {row.loading ? (
+                          <Skeleton
+                            width={32}
+                            height={12}
+                            borderRadius={3}
+                            style={{ marginLeft: "auto" }}
+                          />
+                        ) : rate == null ? (
+                          "—"
+                        ) : (
+                          `${rate.toFixed(1)}%`
+                        )}
+                      </span>
+                      {row.loading ? (
+                        <Skeleton width="100%" height={6} borderRadius={3} />
+                      ) : (
+                        <ProjectBar
+                          percent={barPercent}
+                          color={row.color}
+                          delay={reduce ? 0 : i * STAGGER + 0.1}
+                        />
+                      )}
                     </Link>
                   </StaggerRow>
                 );

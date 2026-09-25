@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f14cf3698080a99060a067a6a7e261f6736a31a739eb2aa57e193a5036716d23",
+  "claims": [
+    {
+      "id": "claim_d5f0a4a4fa8047e2a8ad80a82055bbb2",
+      "statement": "Spec discovery lists workspace projects, fetches selected projects' recursive enriched trees in parallel, and retains only Markdown, Feature, or Gherkin blobs.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks/api/useProjectSpecs.ts#L22-L28",
+          "version": "repo-lines-v1:sha256:e644a6f0c68a793e7d5bbe2d65c91dab1b7592fe26ee8f2fd5dd379bf3785d8a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzAyNzk1YzFmY2MwM2I1MGJiOTYxNWVjMzY1OWVmMDdmMWY3MWEzM2QyM2FhMWJkYmY4ZDA4Yzc0ZmVjMDE1NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjc1Njk1ZmEwMTQ3YjE1YzdjZDFjNTllODBiODZlNjkzMzBkYTI5Yjc5ZDMzNDdkYTFjMDIyNjM3ZDBkMTMxYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGJlOTY0NWNjNjJlZGU4YTQ0MjVhMWY3MTlkOWNjOTcxNWU0ZmU4YjdmMzZiNmJmOTA1Nzk0ZGZmNmQ1ZjA1OSJ9"
+        },
+        {
+          "resource": "repo://src/hooks/api/useProjectSpecs.ts#L68-L91",
+          "version": "repo-lines-v1:sha256:46264a49b602d18d69aaa0a8690a36df906caf3a23d55b89c578a47ac7477fa8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMGE5MzBmMzZkOGFhNDNjMTIxYWVmNzEzYTliOThkMWQyNjcxYzc5ZmM0ZjgwZjkzOWIzY2NhYTc1ZWM3MTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMzUyNTg5YzM0ZDNjNjA2ODU5MzFiNmVjYzRkNTA5OTFhN2M1NmM4ZmJhMjg5NDExNDY1NzY5MDI3MmNhYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzOWU1MGUzYTM1YzUyODAyZjA1YzJmOWYyZDgxODI4ZjNmM2EwNTI1OWI5NDdiYTQ2NTdmOWZiNjhlODI5ODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0b1fc65c9ca74516b981b09f450fd131",
+      "statement": "A live spec's navigation ID combines project ID and repository path with a pipe, and decoding splits on only the first pipe.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks/api/useProjectSpecs.ts#L37-L53",
+          "version": "repo-lines-v1:sha256:47537aade4a03d19b433e56377e4186775053b97537214e099747a73d52df135:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YTJmZThjYWU0ZmY4MjEwOTI0ZTlmMWI3YmQ4NmU5YjcyMjI5NjMzMjdjM2QzMGZjMzBmNmE5ZjVhNzE4YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBiMjYyZTI3N2E5MGUyZTIwNGYxODQxZTA0YzFhNWM2Zjk4MzBhMDgyOWYwYTUyZDk0YzljYTBhZTFkOTVkYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2YWM0ZWQzMmEwMDFlMTg4MzEwNjExODIxZWUwNDk0Yzc2YzhiYTVmY2M1NzViNGQyY2U0YzAwZTA3ZGE5Y2MifQ"
+        },
+        {
+          "resource": "repo://src/hooks/api/useProjectSpecs.ts#L62-L66",
+          "version": "repo-lines-v1:sha256:194bfa09b99fa4b2a996e4c3a3b2db6fedcfeb8a4937579f9cd1e70b72a65377:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmFkYThjZjc4MDQ2MGY2ZDYzZjJkZDFkZmNkNzI2ZjIyZDdkMmI2NjA4ODU1MWE5MjI1M2MxMzI0Y2Y2NTM5MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFhYzVmNmE4NzkzYzliZjNmYmQwNjFmMTNkY2RlZTFkZjhjODFlYzc2OGNkNWI0ZmIxODI5YjUzMzRiYTBlNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTEyMDVlNzg3YTk4OWUxOGVkMjcwNDI3YjFkZDc4MGMzMzJlNzcxNDhhZGZjODRkZGJmZWQ0ZGM4NTRhZWMzNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_db8845895e2c4491af4b0d646bb97bbe",
+      "statement": "The specs API supports tree/directory reads, file reads and writes, delete, multi-file commits, commit history/detail, blame, and search through project-scoped endpoints.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/specs.ts#L252-L283",
+          "version": "repo-lines-v1:sha256:e5b15d0cb0b1a4fc314337341c9df838b8a64bb9d540d9171b8c537e9b3551c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0OTdjNjljMGU3ZjEzZjA3ZmIyNzE2ODlhNTViZjEwMzVjZWUxMTMyOTAwMTRjMzY0NmRkMWM2NjkwOTEwMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4ZDAyZmViOTY3ZDdjNDQyM2NjYzQxNmU2MDUxZTgyNTdkZmM1MjAzMmI5OGYzYjI2NDMzYmY3MTA0NmM1N2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4YzYwOGJmMzY4ZjJmNzUwOTlkMGE1NGE3MDM2ZTRmZDE2NWZiZTU5YjQ3NzRlODJkMTNiYzcxYTg1MGJiOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/api/specs.ts#L59-L175",
+          "version": "repo-lines-v1:sha256:915edf6db52ab808e326674b8a5c838eb3c16d863592f6953747ba3bf130f145:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZWRjN2I3NzRkNDA4YjczZjYyYWM1ZjU0YWViYjU0ZDQxOGZjZmQ0YjRkMmRjY2QwZTNiMjY4YWM1ZWIyMGUzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkYjIzYWUwNThmNzdiZjkzOTUzOWY1MDE3OTMzN2VhYTNhOTc2YTZkOGFjMjJiMWQ4YmI1NzNkZmEwNGQ0ZGNmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3Mjc3NDk1NTZmYzUwYTM1NGVjYzU2ZTYzYmYxYTdhNTYyOGE5ODA3OTkyZjVmNmYxYjQwNDg2OTM0MjUxOWVkIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_d4e2de50b27143569ce448c64e21f7b8",
+      "statement": "The blame adapter accepts wrapped, flat, or GitLab range payloads and normalizes them into a flat sequence of line records.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/specs.ts#L177-L250",
+          "version": "repo-lines-v1:sha256:36bf9b759fa69a12bdb25e30882c0a0e63b7270bd1a2728b3c43ca45b41abf1d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0OTdkOWIxOWQyMjM0ZGE2NGJjMjFmOWUxNzdlMzRkZTc5N2M3Y2JiYjM1NTA3NTdjYjM5MDZjZDY1MzQyMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmNTQwZTIyNzg4Nzg4NThhYTEyYjk2YzY0YjhkOTZmYmJlZjc4Y2YxNDgwMThhNjYzMGIwMjIzMWI2ZjQ0MzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a3b382fd4135440eadf36c8cc51e2735",
+      "statement": "Creating a spec invalidates the live-specs query family, while editing a detail invalidates its file and commit-history keys after save.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/spec-detail.tsx#L83-L102",
+          "version": "repo-lines-v1:sha256:360e544339e07980946faa3bb59105caf70951fa8400b69b18fb736c837d7e35:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkNDIyOWI2MzU2NjU5ZmQ2MWQyMGEzY2NkMmQ1Yzk4MmM3ZGY5NjNkNmY5MDIyNGU1Y2IxNzNlZTAxNjc4MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlMDVhZmZjMWY5ZjNhOWI4ODhhNWI1ODg3NDVjNTg2Y2Y2NDE3MjM1M2RiMDE5NzQ1MzJlMDU5ZDg3ZjE5YzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiZTI0ZmU2MjE1OGRiNDkxZjFjYzUyNjAyOTM1MTMzMjNkMDViNTNhYzQwNDdhZTZiNWZkZWI1MmYxM2Y3ODkifQ"
+        },
+        {
+          "resource": "repo://src/pages/specs-list.tsx#L89-L109",
+          "version": "repo-lines-v1:sha256:65470252789f4fd193a956496ee0a9802fde345d34c55a25373903d51491a774:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhODMyMDAyY2I0MmJhMzlhNzQ0YTU3NTIwZTlmYjg0N2MwNWI5YmEwOTEzMzY4MWVhNjQwODJlY2ExMjQyMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlMjBlODFhZTlkMzhmMDA2MzhiYjJjMzUzZjZjZjE5MDI5NGEzN2I5ZWMxYzJhN2Q1MjhkMzFhZTI2NjA3NTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZmE4ZDQ3NGUxN2QyMGZmMmE5NmVjOTYxNGM0ZmViMDM0MDUwYjE5NTMzYjgzZGU1ZDM1NThmMDVmNzQ0YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2296d4c8c17642e597370fe52ad90a46",
+      "statement": "Spec detail loads the project, file, history, and blame separately; invalid identity and project/file load failures are gating states, while commit detail is deferred until selection.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/spec-detail.tsx#L159-L186",
+          "version": "repo-lines-v1:sha256:f42de1687cc8b7d77e19637c8154edffe29aa15d18eed9c685ed85210e4d84d2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMzM0MzE0NjY3MDVmYzVlZjNhMWJmNjgwMTg3NTUwOGE0NmRiN2JkZjFiNTc3YTJhZDUwMzI3ZTAzNTA4Y2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmOGIyYmM0ZmRhMmQzOWFlNmMxM2U0OGIyMWZmNDM5ZDYzNzdlNGRjYWMyN2U4MjliMTY4ZmU5NWRmZDg5NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmNjAzZDE1MDYyNzNhYjJhNjJkYTI3YmQxMGJhOGQ1MjY0YTA5NDE4OTBkN2M2YTIzNmFiODU2NTgxMjE5NjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1NTI1ZjQ2ZjAyN2Y3N2NhNGM3ZjdiMGIzNWY5YmI0M2MxYzllODcxNDRiODJiYzZkMGU1OWIxZTljNDg1OTcifQ"
+        },
+        {
+          "resource": "repo://src/pages/spec-detail.tsx#L24-L81",
+          "version": "repo-lines-v1:sha256:164191a8900b0bb5118d60123869ee0ed0fb599922bb95aa17e4f3f0c8213b6b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1N2VhOGRmM2I4OGE3NGRkM2YzYTRhZjQ0ODRhODM2NzE0MzkyNzg2ZGU1YjAwNTRjYWIyOGIwZDY2ZGNkNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlODRhNjVhMDIwNGMxMDBjNWRhMjAwZTU3ZGVjOGVlNzkyODlmY2U4OTRkMzE0OTg4M2I1ODNhNzhiMzhjMDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNjViMjFmYzNlYWYzYTU2YWU2ZjY1MjEwZjYyM2QwM2UyZGUyMzMyZThkODIzYmQxNWY0Y2FjMmVlNmYzYzEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_82a4a03ad2344742a9ab6721f6a6e998",
+      "statement": "FSD issue generation first previews editable drafts and then creates them, reporting created and failed counts separately for mixed outcomes.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/project.ts#L116-L163",
+          "version": "repo-lines-v1:sha256:5c632fb8e3510c2f36c5410d96b873f6226053a559b3d0ff47e89f89f4407499:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmNTRhNjNmMjlkYjdhNjNkMWZlOWY5ZWNjMjRkYzczNzc2NDQyNTlkNTcxNTYzZjc2M2RhM2I3NjA5MGJmZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY0N2JmMGJkMGU5NDZlMDMzMjZiZDE1ZDFiZTdkMmNjZTA2YzYzMDQ2NDgyYTkyMTNlZDU3NjQzYTE4MmNiZGYifQ"
+        },
+        {
+          "resource": "repo://src/pages/spec-detail.tsx#L117-L157",
+          "version": "repo-lines-v1:sha256:c0bfff2344420e55540a60a7e7cd5ef82a8fe8b4f6b99a099e5e0f71de2c5c58:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4ZTgyMzM3MzY5NWI2MzcyMDc0YzA1NTlkOWZlMDI4MjRiYmRjMGRiZWRkMDA5YTBhZWU4Yjk5NTRkMzhhYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmNjAzZDE1MDYyNzNhYjJhNjJkYTI3YmQxMGJhOGQ1MjY0YTA5NDE4OTBkN2M2YTIzNmFiODU2NTgxMjE5NjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzZThjNTBiOTQ2YTU1MjM5NDcyZTAzZGQ2Mjg3MWZlMmNkY2E2Mjg5MWI3M2Q2ZTRjOTA1OTAwZDg4ZWUyNTkifQ"
+        },
+        {
+          "resource": "repo://src/pages/spec-detail.tsx#L337-L455",
+          "version": "repo-lines-v1:sha256:2cecbc347a683f8973116636e4283f68a4bec3adbb17d6200ddd47c44669589d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4OGQ2ODU5MGViYTc1Mjg2OTA0YzhhNDdiOTg4ZTA0YTMxYmVhYWYxOTcxMzdkMGI5YjhjN2M2YWQzNTk1MjZmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxNDQ0YTMxZDhlYzdlODhmODU1NzE1MjZiZjI3Yzk1ODgyMGRmZmQyOWY2ODUyMWQwYzA1Yjc3MDVhMWYxOGI0IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhYTYyZmY0OGI4N2Y1MDdmOWEyNWRiMTI5ODI2ZjAxODc5M2FhZDVkYzYxMDNlYzFlMzEwNmVlOWJhOWE3ODQ4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzZGVjYjlmZGI4ODI1M2RkM2E3OTA3YjkxZTVkMGIxYWUzOWFhZjdhZDk4YzJlZmE0MTI5YjYxMjdhMTc0YmRhIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_57f466944639439f92afd7a8c9a75367",
+      "statement": "The shared API layer treats HTTP 207 as successful partial data, enabling row-level FSD issue creation results to reach the page.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/api.ts#L65-L103",
+          "version": "repo-lines-v1:sha256:51e70676d4b1c2630d34e5836823b0048d3021eebf123e771a26fcdf63617f79:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyYjJkZmM3OTljN2VlOTMwY2VhMjZjYWQyMDg4Yjg1YWM1NzFhN2IyNzIzODg0MTA0ODdhYzQxZDBhZjg2NDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkOWUxMjU0NjQyNTU3NmQzZGVhZThjOWI5ZGJmMTI4ZDVkNmRkYWY1ZDdmZTg1NzkzNDkyN2RlZmZhM2I5ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlMjRkZTZkMmY1ZjZkMTkwMzQwMGY0MGZmZmY1MzU0ODExNGY3OGNhZDhlNzM1ZDU5YzU5MjdjYjgwZTk1ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwMTY5OTc5NzRhNTg0YmFiYjA3NzY3YmNjOGQyYzdlN2FhN2Q3MmUwYWU4MGY5N2YxMjc5OWEwYjhlZTQ1MDQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}

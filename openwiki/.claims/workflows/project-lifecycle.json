@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0b87e47f022f5b8e0bfffaab67e47df599b92bc504aa46ae37995e1c95c2a149",
+  "claims": [
+    {
+      "id": "claim_b2d5ed017bce4dbaa337216ec4459d88",
+      "statement": "A workspace project stores separate issue, specs, backend, and frontend GitLab repository identities alongside project metadata and shared testing context.",
+      "evidence": [
+        {
+          "resource": "repo://src/types/project.ts#L1-L21",
+          "version": "repo-lines-v1:sha256:128e64ae5a56c6e6acf5cbd08154f783411d5e84de919863d09404045fdb2c16:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3MDhlMWY4YmI5OTUyMDc5Y2U0OTdjMGI4ZDUyNTY3NjZmZDUyZTMzZTA4YmVmYjMwNmVlOWFjMjYzMmRjYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4OWE0ZjllZjUzY2JlZTQzNmRhMjE3MzViMzMzODM4YmM4NjI4NDMxYzc3YjBhMDQyZDk0MjU0ZTYzYjY2YTgifQ"
+        },
+        {
+          "resource": "repo://src/types/project.ts#L40-L62",
+          "version": "repo-lines-v1:sha256:e7c07a5fbeb908844bccd3fb7d5a8016637efec259b9607a4e9cd38c3bab9d9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5Njc0YzZjMDBkZWJkYjAxNDhiOWE0NjE2MzY5ZDJiODdhZGI5ZTA4ZWIzYmMyZDY3Yzc2NTkxMzM3NjIzOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVhM2VjZTIyM2MxYWQ3M2E5ODU3OTk4MDU3NDU4YjRkN2M1NjUxN2Q0YWU1ZmU5MDNhYTk0NjA1MzQyMzJmMzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b7b70e559ee4c5b8733307773a5b20e",
+      "statement": "The add-project flow requires all four repository selections, verifies that each repository's branches can be fetched and are nonempty, then submits those four numeric IDs with the project metadata.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/add-project.tsx#L291-L361",
+          "version": "repo-lines-v1:sha256:d6ed5de672c1e37370e472f2b4d8a4d319eaea174b2b99fca69d28bda3b2beaf:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YjdhYzkxMjljNjU0ZjczZTZjYTI1MGQ2MmYzNmZkOGZkZmM5MDE0MjBjZjMzNTNlZWFiYTdiM2M2ZWI2YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5NzhlMjUwM2I4Y2YzN2EwNmY3ZDZmMGEzYTZiNmZlMzU2OTFmYmNhYjUwYjg3NzVjYWI2ZmFiYzcxYzU5MmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3MGJiZjhiYTQ1ZjViMzBiMGNlNTA0NzAzNWE2ZjNkOWI0MjFmMDgyYTkzOTMzZjY3NmUxMTUxMzEzNjFhODUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE1MDg1NTlkZWUzNWRiZWE2YTEyY2I4MDY3NjFjMWZlZjRiNGRmNzljMTFhOWI0ZjQ4M2NkZWRiYmM5YWRiNWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_be8550067ec84525b63fc9b24caa2488",
+      "statement": "The creation response can report the created project, imported scenario count, and whether scenario synchronization started; the creation hook invalidates the list and seeds project detail cache.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/project.ts#L47-L61",
+          "version": "repo-lines-v1:sha256:bd93feaa144f6011e589684dbd267dbe57ee357c2d46bb463bbc378a2b1e8493:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0Y2QyNGI0NTk2ODYxZGJjNTY4NGNmYzkyZjE3NjYxY2FlZDFmZjlhZTljZjdlZjdjNGU1OTBlNjRhMGYyZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhOWM3NmYwNGQ3MmJjN2QxMjkyNzJkMjZmNTI5NjNmMjdiYmNhYjYwM2FiZDFiNWYxNzYzYWVmZGRhNzJjOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkOTI5NGJjM2RlZTllZWE1Nzk1NzYyMTEyYjBmOWRhYmI4NTE5ODFhYTdmMmZjZjU5NDA3MDE2M2EwODY5MmQifQ"
+        },
+        {
+          "resource": "repo://src/hooks/api/useCreateAppProject.ts#L23-L41",
+          "version": "repo-lines-v1:sha256:572c4adf43521b2da0d2a95f68d3ded6c0977eed8fc091f1d069cbc65a4ba51f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOWRiYmRkNDMxMzdhNDBlZDQ5ZTAwYTIwYjQ1MWIwZjBiNjkyNGQwNjVjMjQzNmZiYjY4NGMwM2Q0Njc2YzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmMGVkODk2YjM3NDBkMDc2MjYyYjJjYzY0NDIzYTI0ZTIwNDg2YjgwNjIwMDIxYjUxNjM0YmMwMTViMTU1YWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4f34c9a2a8144412b03bb80a55d3cb79",
+      "statement": "The project dashboard independently requests detail and aggregate data, subscribes to the project stream, and exposes update/delete mutations; project detail pending or error states gate the main page.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/project-dashboard.tsx#L58-L109",
+          "version": "repo-lines-v1:sha256:0326145ded69b806aa659988380b1e16699f13ff6e410dcd2d13f1e2ec338797:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5ZGMwN2MxZjQ1ODhlMDg3ZDlhOTZiYTBjNTlmYTRiYmU2YjRjYTM5ZjM4MGM4ZWFkNjkzZjk3N2ZkOGIyZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlN2NjMDk3OTU1N2I2ZjZiYjY5YzUyZmFlOTJlMmRhOGQ1YWUyMDkzMGEzZGI2MDU1ZTYyNGY4NmMzYjRlYzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwMDMyOWJkMDM0YzBkZjNhYWFhMjIxMzlkZjM1MmViMDc4ZDU3ZjhhZTI5MzEwNTBhYzNiNjg0MzY4NjU0M2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyNzc1YTNmZDA5Y2ViMTk2MGMxZDdjNmRmZmMzYTkzMmM0ZmE1OGI4Y2U1NjA0M2FkY2E5NzVlNWM5MTE3NzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_af3bd264c77541e1a6b0facf9c5d22e5",
+      "statement": "Project testing context is loaded and saved as Markdown, honors a backend-provided size/template contract, and invalidates its query after save.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/project.ts#L90-L104",
+          "version": "repo-lines-v1:sha256:7c25672203f29bb162f79cc5d639915a5b0f8b7d307b932e808e7bc007a2c28f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwYjk0Y2QxNjZjOThiMmQ5YTEyZTUyZTFhNWJlODgwNWIzOWZmNmMwMDY2OTcyNDRhZThhY2RmMDNkZDE3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2ZTAxY2Q0YjliNzM5ZWNiNmI1ZjJmZDhiYWEyOGEwNGJhM2RkNzI2YTE0NjFiYWNlYTVkNjFlM2M1Zjk1ZDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzNTNlNjYxOTI3NzA0NWY1M2MyNTBhYjM5MDU4ZmNkMWY0OTJiNWVlYzNkMTc1Mjg3NTc0MjI1NDE0ZjdiYTEifQ"
+        },
+        {
+          "resource": "repo://src/components/ProjectTestContextEditor.tsx#L35-L67",
+          "version": "repo-lines-v1:sha256:778b7092005919a2ea47d6be54023f98f892e7a7a1ab40587c816b32907e3a53:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3MjE2ZThlOWMwYTFhNjhkMDZjMmZiYWE1ZmQyMTM5NDgyYjhlZmQwYTE5MzE1YjkxNWU2Y2NlODQ5ZDg5ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MjY3OTM1ZmM2MzM0NjVkODQ4YjQwYTRlZDY5NjdlN2I3YTMyM2Y4MWNkNTNjMTEwYWUyMTAyOTY4N2FhMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMzAyZDQzMTg3MDhiMDgwNDFiM2FjZTUxYWU3OWJjOWE3OWI0Mjg5MDlkMDM3OGI1ZTcxYTVhMTE4ZDgyMmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/components/ProjectTestContextEditor.tsx#L5-L33",
+          "version": "repo-lines-v1:sha256:426e3b10a62cd45f1a4d113cf4205ac9caf0c366f787c2ab7d16be75e41e4daa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1M2ViNzQ1OGQzNDQ5YjMzOWJjYjg0NjRkY2IxNjFkNzAyZmQ0MzBjZWY3YzkwYjc1NjUwZTVmMmJhYzAyMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMzUyNTg5YzM0ZDNjNjA2ODU5MzFiNmVjYzRkNTA5OTFhN2M1NmM4ZmJhMjg5NDExNDY1NzY5MDI3MmNhYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5NTU4ZWQyZjI1YWUwZTc5MWEzNTRiY2IyNWVmYjYwNWU2Njc0NGIxZTY2ZGUzNDU3OTU4MjY2ZDgyZDRlOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkYTU5OGY1MGYwYjBhZmNkZTVjNmY1MGZhZjNlYjdmNjBkNmYyMDhmMjg3MDQ4YzZmMmNiOGU3ZjNmNWQ4OGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5a8cbb231b244a0285acd70a36ca8d07",
+      "statement": "Project activity includes lifecycle, scenario synchronization, spec-save, and FSD-issue actions; the feed resolves actors and has distinct pending, error, and empty states.",
+      "evidence": [
+        {
+          "resource": "repo://src/components/ProjectActivityFeed.tsx#L19-L80",
+          "version": "repo-lines-v1:sha256:11c525d397db09810776fe27ca9948e904566700eb580bb86a7abbf820e263a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3MWFlNzU2MTNlZWY4NWNkNDE4ZjdmYTVlMmQyZDljOTU1ZTdiOWZiYjUzYjk2Y2RjMTVhYWVhN2YxMjFkNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MjY3OTM1ZmM2MzM0NjVkODQ4YjQwYTRlZDY5NjdlN2I3YTMyM2Y4MWNkNTNjMTEwYWUyMTAyOTY4N2FhMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0NTRjMzlmZGViZjNjY2VhOTJhZGIyNmRlNDIyNTkzOTQ2YTY0YmFjYzg5MjVkZTI1YTZhNGY3MGE0ZWFhNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5YjYwOTAyMzFhZDZjNmM1YzY5ZWM5Mjc3MzBlNjAzM2JmNTQ2MDIzOTFlYjJlYjY5NDMyZDhjNmY1ZjIzMjcifQ"
+        },
+        {
+          "resource": "repo://src/types/project.ts#L64-L79",
+          "version": "repo-lines-v1:sha256:e62f6571c9dc0b168b44646577e9ee71710f7b6ca292dc72ca5b951fc8adf7d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMTljNjQ3YjU1YzI2NDdmZDcyMzk1NDNhODQ4YjI1OWRmMmExYTkyMzY0MjYxOTYzMjhiZTMyNTliODE5YmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwOWMyZmRkM2E0YWI0ZDJjZDJlODdlODExYWM5N2VlNGIyY2IzYzdiNzkzZTczMWVmN2QxZGYyMTZjNWMzYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2OTc3YzI3MDhiMWI3OGM1MjBhODM2OWVhYTY4ZjYwNWI4MWMyYTk0NDQ1NWNmMmVlNGVhNWJkMzdkMmRmYWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d3d70703fe7548b28d9e9c5ac1105e93",
+      "statement": "Successful project update replaces detail cache and invalidates list/activity, while deletion removes detail cache and invalidates the list.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks/api/useDeleteAppProject.ts#L5-L20",
+          "version": "repo-lines-v1:sha256:d9e46eea806a6ec98336e410d55b508af03a247ac655ff487016d8b8429f89f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlMmUwZTFmY2U1ZjVkMDdjODQzMjMwMjVkODQ4ODk3Y2Q5YjkyYjVjNjNmYmViYjc0MWQzYTliNWIyNTUwMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMzUyNTg5YzM0ZDNjNjA2ODU5MzFiNmVjYzRkNTA5OTFhN2M1NmM4ZmJhMjg5NDExNDY1NzY5MDI3MmNhYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4NmRkM2Q5M2Q4YzVjOTE2MmU2ODdkZjdhMjhkOTU4ODljZjI5MTY0ZDBkNzhiNzkwMGVjNzFlNmViMTM1MWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/hooks/api/useUpdateAppProject.ts#L6-L22",
+          "version": "repo-lines-v1:sha256:99429caef087b12e17b10d4bc4166b3044768b3cf5a9e530cebce07f6c386df3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5YjViZWMxMDNiNTc1MjRjZDUxMDRlMTU4NjQxMTQzNmMwZjM3YzkyNTdhYmViM2NmZGUzMDcxZTRmMzk2MzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMzUyNTg5YzM0ZDNjNjA2ODU5MzFiNmVjYzRkNTA5OTFhN2M1NmM4ZmJhMjg5NDExNDY1NzY5MDI3MmNhYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1NmFiNWY4NDNlYjY1ZDkyNWY3MzA2N2E0OWM2M2NlYmNkNWYzZDE1M2I5OWQ0OWYzNDQ0NWY0OGU0ZjBiZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_079e9691e3ad4f43b9795dadd5f81adb",
+      "statement": "The project API exposes list/detail, activity, dashboard, testing context, boards, labels, members, uploads, and branch discovery through backend endpoints.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/project.ts#L165-L231",
+          "version": "repo-lines-v1:sha256:a184a8e93ec9a94a1a99e52eb8265d5d64719b0f768a15c90a062caf5e0e44fe:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjNWVlNzdiYTU5YTJhN2U1MDlkZmYzYTgxYTk5ZmNmNTU3NmQ2YjdmMjIxNmRkODEzZDAzZTMzZjIwYmU1OWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMGU3NzM3NDEwMTQ0OGRmYzU1NTQzMGVjMmFlMmYyZDJiMjk3YjdlNjAyMjZmNjAwZDZhNTE4YzEyZjdmYjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/api/project.ts#L39-L114",
+          "version": "repo-lines-v1:sha256:91b1b39eed101c2e5f04693788906ce8564dfb798241875b42dd17c769b5a7aa:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwZjU1MTllZTFlNmU0MGRjNzI2Y2Q1OWU2NTAyN2JmNmI1ZjExZjQ2ODdjY2U5MjdhYTM1OGVjMWRiNTEzNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiNjVmYWViZTNkN2JkYjA1NzFhNjcyOGIyOGFlZWI3ZDRkMDQzNmZjOWVkYmNlOWI4MDVhODljY2I0N2NkMTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4YmJkZjdkMThlNTUyMzI1NWI0NWY2NmYwNTMzYTk1ZTYwMWEyMDBhN2U2NDZkNzUwZTY2ZjBiOWVkMGIxMzEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}

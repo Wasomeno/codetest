@@ -28,6 +28,7 @@ import { Route as TestsIdRouteImport } from './routes/tests.$id'
 import { Route as ProjectsIdIndexRouteImport } from './routes/projects.$id.index'
 import { Route as ProjectsIdSpecsRouteImport } from './routes/projects.$id.specs'
 import { Route as ProjectsIdTestScenariosRouteImport } from './routes/projects.$id.test-scenarios'
+import { Route as SpecsIdDocumentRouteImport } from './routes/specs_.$id.document'
 import { Route as ProjectsIdSpecsIndexRouteImport } from './routes/projects.$id.specs.index'
 import { Route as ProjectsIdSpecsIdRouteImport } from './routes/projects.$id.specs.$id'
 import { Route as ProjectsIdTestScenariosIndexRouteImport } from './routes/projects.$id.test-scenarios.index'
@@ -127,6 +128,11 @@ const ProjectsIdTestScenariosRoute = ProjectsIdTestScenariosRouteImport.update({
   path: '/test-scenarios',
   getParentRoute: () => ProjectsIdRoute,
 } as any)
+const SpecsIdDocumentRoute = SpecsIdDocumentRouteImport.update({
+  id: '/specs_/$id/document',
+  path: '/specs/$id/document',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsIdSpecsIndexRoute = ProjectsIdSpecsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/tests/': typeof TestsIndexRoute
   '/projects/$id/specs': typeof ProjectsIdSpecsRouteWithChildren
   '/projects/$id/test-scenarios': typeof ProjectsIdTestScenariosRouteWithChildren
+  '/specs/$id/document': typeof SpecsIdDocumentRoute
   '/projects/$id/': typeof ProjectsIdIndexRoute
   '/projects/$id/specs/$id': typeof ProjectsIdSpecsIdRoute
   '/projects/$id/specs/': typeof ProjectsIdSpecsIndexRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsIndexRoute
   '/specs': typeof SpecsIndexRoute
   '/tests': typeof TestsIndexRoute
+  '/specs/$id/document': typeof SpecsIdDocumentRoute
   '/projects/$id': typeof ProjectsIdIndexRoute
   '/projects/$id/specs/$id': typeof ProjectsIdSpecsIdRoute
   '/projects/$id/specs': typeof ProjectsIdSpecsIndexRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/tests/': typeof TestsIndexRoute
   '/projects/$id/specs': typeof ProjectsIdSpecsRouteWithChildren
   '/projects/$id/test-scenarios': typeof ProjectsIdTestScenariosRouteWithChildren
+  '/specs_/$id/document': typeof SpecsIdDocumentRoute
   '/projects/$id/': typeof ProjectsIdIndexRoute
   '/projects/$id/specs/$id': typeof ProjectsIdSpecsIdRoute
   '/projects/$id/specs/': typeof ProjectsIdSpecsIndexRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/tests/'
     | '/projects/$id/specs'
     | '/projects/$id/test-scenarios'
+    | '/specs/$id/document'
     | '/projects/$id/'
     | '/projects/$id/specs/$id'
     | '/projects/$id/specs/'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/specs'
     | '/tests'
+    | '/specs/$id/document'
     | '/projects/$id'
     | '/projects/$id/specs/$id'
     | '/projects/$id/specs'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/tests/'
     | '/projects/$id/specs'
     | '/projects/$id/test-scenarios'
+    | '/specs_/$id/document'
     | '/projects/$id/'
     | '/projects/$id/specs/$id'
     | '/projects/$id/specs/'
@@ -291,6 +303,7 @@ export interface RootRouteChildren {
   SpecsRoute: typeof SpecsRouteWithChildren
   TestsRoute: typeof TestsRouteWithChildren
   RunsIdRoute: typeof RunsIdRoute
+  SpecsIdDocumentRoute: typeof SpecsIdDocumentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -428,6 +441,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsIdTestScenariosRouteImport
       parentRoute: typeof ProjectsIdRoute
     }
+    '/specs_/$id/document': {
+      id: '/specs_/$id/document'
+      path: '/specs/$id/document'
+      fullPath: '/specs/$id/document'
+      preLoaderRoute: typeof SpecsIdDocumentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/$id/specs/': {
       id: '/projects/$id/specs/'
       path: '/'
@@ -545,6 +565,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpecsRoute: SpecsRouteWithChildren,
   TestsRoute: TestsRouteWithChildren,
   RunsIdRoute: RunsIdRoute,
+  SpecsIdDocumentRoute: SpecsIdDocumentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

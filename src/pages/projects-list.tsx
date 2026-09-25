@@ -7,6 +7,7 @@ import type { AppProject, ProjectDashboard } from "~/types/project";
 import { useProjects } from "~/hooks/api/useProjects";
 import { colorForName } from "~/lib/map-app-project";
 import { qk } from "~/api/queryKeys";
+import { AllProjectsSkeleton } from "~/components/Skeleton";
 
 /** Cards revealed per scroll page. */
 const PAGE_SIZE = 6;
@@ -392,21 +393,7 @@ export function ProjectsListPage() {
         </div>
 
         {projectsQuery.isPending && projects.length === 0 ? (
-          // First-load skeleton — three neutral cards so the page
-          // doesn't flash an empty state then pop in.
-          <div className="ap-grid" data-od-id="all-projects-skeleton" aria-hidden="true">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={`skel-${i}`}
-                className="ap-card"
-                style={{
-                  background: 'var(--border)',
-                  opacity: 0.35,
-                  height: 220,
-                }}
-              />
-            ))}
-          </div>
+          <AllProjectsSkeleton count={PAGE_SIZE} reduce={reduce} />
         ) : total === 0 ? (
           <motion.div
             className="ap-empty"

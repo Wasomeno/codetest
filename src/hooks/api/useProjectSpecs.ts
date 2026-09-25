@@ -79,11 +79,16 @@ export function useProjectSpecs(projectId?: string) {
       )
       const results = await Promise.all(
         projects.map(async (project) => {
-          const response = await getSpecsTree(project.id, '', undefined, true, true)
-          if (!response.success || !response.data) {
-            throw new Error(response.error || `Failed to load specs for ${project.name}`)
+          try {
+            const response = await getSpecsTree(project.id, '', undefined, true, false)
+            if (!response.success || !response.data) {
+              return []
+            }
+            return toLiveSpecs(project, response.data.tree ?? [])
+          } catch (err) {
+            console.error(`Failed to load specs for ${project.name}:`, err)
+            return []
           }
-          return toLiveSpecs(project, response.data.tree ?? [])
         }),
       )
       return results.flat()

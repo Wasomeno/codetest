@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:585e727b0c3c4a6d7ea47c643a15b8880982e153caa4dbc5253896827620bfa3",
+  "claims": [
+    {
+      "id": "claim_89d66c2a72f542638e3449c16507ca1f",
+      "statement": "The shared API service chooses VITE_API_BASE_URL or same-origin /api, attaches the localStorage session as X-Session-ID, preserves FormData content-type handling, and defaults credentials to omit.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/api.ts#L16-L63",
+          "version": "repo-lines-v1:sha256:9fccf939643e7fef7c2b3a5f8253fdb34e69b4e8acc9775f3375073419769ba5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNWYxNDlhMDYzOTk1NzRkZDUyNzUzMmMyNTgyNjEzYTU0NzZlZWRkNThiZjgzN2MwZWZhZWYzNmFjZjM0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZDExY2FmNDNlOTdlZjM2OWU2YmVlZDFhMjY4YmQwNTgzOGYyOWI5ZGQyNTRiZjY5YmE2NDg4NDE0NzIzNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzYWEyNDNkZGE4NzVlMzQxNGU0NDA0YWM3MTE5ZWExODNjZDAxZmM0NzdiMzU5ZDI0MjQ5OWViOGJiNTAxYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxOWUxZTM0OTNiY2JmM2NjOWM0MjAwYTJmZDUyODJlYzY1Y2NmZTEyZGExYmYzMGVlYTk5OTBkZWVlYWU1ZmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e708030786dc4855934126588826fcd0",
+      "statement": "The API layer treats HTTP 207 as partial success, normalizes ordinary HTTP/network failures into unsuccessful response envelopes, and clears session state plus redirects on 401.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/api.ts#L65-L110",
+          "version": "repo-lines-v1:sha256:24dba945fe6ffad651abe56f5b096d4144d90d1d938dbccfd99d9651eef413b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyYjJkZmM3OTljN2VlOTMwY2VhMjZjYWQyMDg4Yjg1YWM1NzFhN2IyNzIzODg0MTA0ODdhYzQxZDBhZjg2NDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlMjRkZTZkMmY1ZjZkMTkwMzQwMGY0MGZmZmY1MzU0ODExNGY3OGNhZDhlNzM1ZDU5YzU5MjdjYjgwZTk1ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmOTlhYzJmZmI4NWQ1ZDE2NTUxY2EyNjBmYTI4Mzk0MDBmOTY3NzM0MWMxZjg4NTNmYTkxMGEzNmQ3NzU3ZjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2b65e7ad06864b039d290ef4f2d5c13d",
+      "statement": "bridgeFetch normalizes Fetch responses and converts transport exceptions to status 0 while selecting JSON, text, or base64 binary decoding.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/fetch-bridge.ts#L32-L87",
+          "version": "repo-lines-v1:sha256:c9635210c869f101bb9eb7f128a46f5159b3a9450cae8303ed6f596f5c342458:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3OGJmMTU3NWQ4YWMwYTY4MGViNDhhM2NjZGU4MDI3YzdkNmNmYWQ0MmM0ZjZkZWNlYmMzMmQ0YjNiM2ZkZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5NWZiYTFjNGYwZGFmNWNmZGYxN2Q2MDhmZDkxODUyNDQ1MjM2NTMyYTM4NjlhMGJkNTdiMGM2YzJhMjU2NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1YTA5N2NkZjM3NzRhMjEzNWQzZDhlYWQ5MDU5M2ZlY2RhNzhiNDZmNWFmY2RiNWY1NmFjODZlZDMxYjljMjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b7bc0d49b77d4c1a992c61906ac460c0",
+      "statement": "The shared QueryClient uses a 30-second stale time, disables focus/reconnect refetching, retries queries once, and does not retry mutations.",
+      "evidence": [
+        {
+          "resource": "repo://src/lib/query-client.ts#L12-L23",
+          "version": "repo-lines-v1:sha256:ef96af916b94550c5c6ba5f34bc9fbf318b8c07de6d9e77ae3a3828e77f4786c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmOWVjYTk4ZjZiMmUxNmE1MmFkODg1N2ZkM2M4ZmQ3ZDQzODI2ZDkyNTMyZmIzZDdjZTBmOWM1ZjRjNGU4Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5NDkyZDhiNjM4OThmNzY4NDhlNjk0NTYyMzZiZWNkOTY4OWNkNDc3Y2ZiZjQzMjE1Y2M1YTA4MjY1ZGEyNmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4fa09620dfe4404ab7e21f586c661b4f",
+      "statement": "React Query keys are centralized for user, project, GitLab proxy, and specs resources, with optional filters normalized to stable empty-string segments.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/queryKeys.ts#L18-L50",
+          "version": "repo-lines-v1:sha256:7d35c7f34cc0c8f19fdcfe6f7bfb08d2dddc8e4a16fe6a3e2886ed5dda0f4410:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlYWU1OWRlOTBkZjY1ZTMxYWFmYmViNzRlODU3MmFkNTE4NDg0M2I2MmJjOTViMjFhNGI3YjdkYTA5MDQxOGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NGVlOGE4ZDFhYTg0NTM5MWJjNjc5ZWI3MGNlN2Y0NmEzY2Q2ZmIyZDE2ZmNjYTY3ZmExNzhmNGY4YzFlMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4NzZjNDU1MWVjNzJiN2MwMDNiZDk3ZTg0MjUzZTI5NjQyMGZkODJlNDY0YTczMjlmZjQ5NTZiMDY4YWRiYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE5MDMyZjYwN2JhM2IyYzU0YmJmNjM1OGIyYTRhOWYyYzY4NGU4MzNmZDNhN2VmOTRmMzQ4NTBhNmUyNmFlZjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd6d5de71a0e444c9accf6f7032a752b",
+      "statement": "The project SSE hook authenticates through query parameters, filters messages for relevance, ignores malformed events, clears terminal banners after eight seconds, and closes the EventSource on cleanup.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks/api/useProjectStream.ts#L14-L86",
+          "version": "repo-lines-v1:sha256:553e4800df6a73dea3742a8a472d6cabd8e8a170b28fc4d20ece7d5998454a7c:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2NmY0ZWI2YzYwZDI2MTJhMTYzMTc2OTJkYjMzOWIzMGMwZjY0NDg4NTc5ZTM3OTRmNjUyMDU5OWJmOTRlYTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwYmIxNzVjMDcxZmQwNWQzM2M4Zjc0YTdhNTdmZWZlN2U4NDk4ZWI2YWUwZWU4YTI2NmVlZGJmMjg4NTk5YzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4OWFjMjFiN2Y1MzQ0YTg2Mzg1ODE0YWM2Yzg0YjIzNmY1MWI0NjkzZGIyNjYyM2U2YjUwMDA3MjNmMTFjNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a8a1c4ebb9d04cd9a646c2af83fd2c53",
+      "statement": "Project create, update, and delete hooks explicitly seed, replace, remove, or invalidate relevant React Query caches after successful mutations.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks/api/useCreateAppProject.ts#L23-L41",
+          "version": "repo-lines-v1:sha256:572c4adf43521b2da0d2a95f68d3ded6c0977eed8fc091f1d069cbc65a4ba51f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOWRiYmRkNDMxMzdhNDBlZDQ5ZTAwYTIwYjQ1MWIwZjBiNjkyNGQwNjVjMjQzNmZiYjY4NGMwM2Q0Njc2YzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmMGVkODk2YjM3NDBkMDc2MjYyYjJjYzY0NDIzYTI0ZTIwNDg2YjgwNjIwMDIxYjUxNjM0YmMwMTViMTU1YWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/hooks/api/useDeleteAppProject.ts#L5-L20",
+          "version": "repo-lines-v1:sha256:d9e46eea806a6ec98336e410d55b508af03a247ac655ff487016d8b8429f89f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlMmUwZTFmY2U1ZjVkMDdjODQzMjMwMjVkODQ4ODk3Y2Q5YjkyYjVjNjNmYmViYjc0MWQzYTliNWIyNTUwMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMzUyNTg5YzM0ZDNjNjA2ODU5MzFiNmVjYzRkNTA5OTFhN2M1NmM4ZmJhMjg5NDExNDY1NzY5MDI3MmNhYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4NmRkM2Q5M2Q4YzVjOTE2MmU2ODdkZjdhMjhkOTU4ODljZjI5MTY0ZDBkNzhiNzkwMGVjNzFlNmViMTM1MWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://src/hooks/api/useUpdateAppProject.ts#L6-L22",
+          "version": "repo-lines-v1:sha256:99429caef087b12e17b10d4bc4166b3044768b3cf5a9e530cebce07f6c386df3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5YjViZWMxMDNiNTc1MjRjZDUxMDRlMTU4NjQxMTQzNmMwZjM3YzkyNTdhYmViM2NmZGUzMDcxZTRmMzk2MzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMzUyNTg5YzM0ZDNjNjA2ODU5MzFiNmVjYzRkNTA5OTFhN2M1NmM4ZmJhMjg5NDExNDY1NzY5MDI3MmNhYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1NmFiNWY4NDNlYjY1ZDkyNWY3MzA2N2E0OWM2M2NlYmNkNWYzZDE1M2I5OWQ0OWYzNDQ0NWY0OGU0ZjBiZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}

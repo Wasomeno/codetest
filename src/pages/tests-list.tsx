@@ -2,18 +2,33 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { DEFAULT_PAGE_SIZE, Pagination } from "~/components/Pagination";
 import { PopoverMenu } from "~/components/PopoverMenu";
-import { fmtDate, fmtRel, getProject, PROJECTS, TESTS } from "~/lib/mock-data-new";
-import type { Test, TestStatus } from "~/lib/mock-data-new";
+import { fmtDate, fmtRel } from "~/lib/mock-data-new";
+import type { TestStatus } from "~/lib/mock-data-new";
+import { useTestScenarios } from "~/hooks/api/useTestScenarios";
+import { useProjects } from "~/hooks/api/useProjects";
+import { colorForName } from "~/lib/map-app-project";
+import type { TestScenario } from "~/types/test-scenario";
+
+export interface ScenarioRowItem {
+  id: string;
+  name: string;
+  projectId: string;
+  projectName: string;
+  createdAt: string;
+  ranAt: string;
+  status: TestStatus;
+  steps: number;
+}
 
 const SORTS = {
-  ran: { label: "Last run · newest", cmp: (a: Test, b: Test) => new Date(b.ranAt).getTime() - new Date(a.ranAt).getTime() },
-  "ran-asc": { label: "Last run · oldest", cmp: (a: Test, b: Test) => new Date(a.ranAt).getTime() - new Date(b.ranAt).getTime() },
-  created: { label: "Created · newest", cmp: (a: Test, b: Test) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() },
-  name: { label: "Name · A → Z", cmp: (a: Test, b: Test) => a.name.localeCompare(b.name) },
-  steps: { label: "Steps · most", cmp: (a: Test, b: Test) => b.steps - a.steps },
+  ran: { label: "Last run · newest", cmp: (a: ScenarioRowItem, b: ScenarioRowItem) => new Date(b.ranAt).getTime() - new Date(a.ranAt).getTime() },
+  "ran-asc": { label: "Last run · oldest", cmp: (a: ScenarioRowItem, b: ScenarioRowItem) => new Date(a.ranAt).getTime() - new Date(b.ranAt).getTime() },
+  created: { label: "Created · newest", cmp: (a: ScenarioRowItem, b: ScenarioRowItem) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() },
+  name: { label: "Name · A → Z", cmp: (a: ScenarioRowItem, b: ScenarioRowItem) => a.name.localeCompare(b.name) },
+  steps: { label: "Steps · most", cmp: (a: ScenarioRowItem, b: ScenarioRowItem) => b.steps - a.steps },
   status: {
     label: "Status · failures first",
-    cmp: (a: Test, b: Test) => {
+    cmp: (a: ScenarioRowItem, b: ScenarioRowItem) => {
       const rank: Record<TestStatus, number> = { failed: 0, flaky: 1, passed: 2, draft: 3 };
       return rank[a.status] - rank[b.status];
     },
@@ -81,26 +96,71 @@ export function TestsListPage({
     projectParam = undefined;
   }
   const navigate = useNavigate();
+  const projectsQuery = useProjects();
+  const projects = projectsQuery.data ?? [];
+
   const [filter, setFilter] = useState<string>(
     defaultProject ?? projectParam ?? "all",
   );
-  const [sort, setSort] = useState<SortKey>("ran");
+  const [sort, setSort] = useState<SortKey>("created");
   const [openMenu, setOpenMenu] = useState<"filter" | "sort" | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  const filtered = useMemo(() => {
-    let list = TESTS;
-    if (filter !== "all") list = list.filter((t) => t.project === filter);
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(
-        (t) => t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q),
+  // Sanitize project filter
+  useEffect(() => {
+    if (filter !== "all" && projects.length > 0) {
+      const match = projects.find(
+        (p) => p.id === filter || p.name.toLowerCase() === filter.toLowerCase(),
       );
+      if (!match) {
+        setFilter("all");
+      } else if (match.id !== filter) {
+        setFilter(match.id);
+      }
+    }
+  }, [projects, filter]);
+
+  const activeProjectId = defaultProject || (filter !== "all" ? filter : undefined);
+  const scenariosQuery = useTestScenarios(activeProjectId, searchQuery);
+  const rawScenarios = scenariosQuery.data ?? [];
+
+  const scenarioItems: ScenarioRowItem[] = useMemo(() => {
+    return rawScenarios.map((s: TestScenario) => {
+      const proj = projects.find((p) => p.id === s.projectId);
+      const projName = proj?.name || "Project";
+      const steps = s.sections?.reduce(
+        (acc, sec) => acc + (sec.testCases?.reduce((tcAcc, tc) => tcAcc + (tc.steps?.length || 0), 0) || 0),
+        0,
+      ) || 0;
+
+      let status: TestStatus = "draft";
+      if (s.automationStats) {
+        if (s.automationStats.failed > 0) status = "failed";
+        else if (s.automationStats.passed > 0) status = "passed";
+      }
+
+      return {
+        id: s.id,
+        name: s.title || s.id,
+        projectId: s.projectId || "",
+        projectName: projName,
+        createdAt: s.createdAt || new Date().toISOString(),
+        ranAt: s.updatedAt || s.createdAt || new Date().toISOString(),
+        status,
+        steps,
+      };
+    });
+  }, [rawScenarios, projects]);
+
+  const filtered = useMemo(() => {
+    let list = scenarioItems;
+    if (filter !== "all" && !defaultProject) {
+      list = list.filter((t) => t.projectId === filter);
     }
     return list;
-  }, [filter, searchQuery]);
+  }, [scenarioItems, filter, defaultProject]);
 
   const sorted = useMemo(() => {
     return [...filtered].sort(SORTS[sort].cmp);
@@ -129,9 +189,14 @@ export function TestsListPage({
     }
   };
 
-  const filterLabel = filter === "all" ? "All projects" : getProject(filter).label;
+  const filterLabel =
+    filter === "all"
+      ? "All projects"
+      : projects.find((p) => p.id === filter)?.name ?? filter;
   const sortLabel = SORTS[sort].label;
-  const scopeLabel = defaultProject ? getProject(defaultProject).label : null;
+  const scopeLabel = defaultProject
+    ? projects.find((p) => p.id === defaultProject)?.name ?? defaultProject
+    : null;
 
   return (
     <div className="app-pane" id="pane-tests" data-od-id="pane-tests">
@@ -255,41 +320,73 @@ export function TestsListPage({
               </tr>
             </thead>
             <tbody id="tests-tbody">
-              {pageItems.map((t) => {
-                const proj = getProject(t.project);
-                return (
-                  <tr
-                    key={t.id}
-                    data-od-id={`test-row-${t.id}`}
-                    onClick={() => navigate({ to: "/tests/$id", params: { id: t.id } })}
-                  >
-                    <td className="td-name">
-                      <Link
-                        className="td-name-link"
-                        to="/tests/$id" params={{ id: t.id }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {t.name}
-                      </Link>
+              {scenariosQuery.isError ? (
+                <tr>
+                  <td colSpan={6} style={{ padding: "32px 16px", textAlign: "center", color: "var(--danger)" }}>
+                    <div style={{ marginBottom: 8, fontWeight: 500 }}>
+                      Failed to load test scenarios: {scenariosQuery.error instanceof Error ? scenariosQuery.error.message : "Network error"}
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => scenariosQuery.refetch()}
+                    >
+                      Retry
+                    </button>
+                  </td>
+                </tr>
+              ) : (scenariosQuery.isLoading || projectsQuery.isLoading) ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} className="skeleton-row" style={{ opacity: 0.6 }}>
+                    <td colSpan={6} style={{ padding: "14px 16px" }}>
+                      <div
+                        style={{
+                          height: 14,
+                          background: "var(--border)",
+                          borderRadius: 4,
+                          width: `${45 + ((i * 17) % 50)}%`,
+                        }}
+                      />
                     </td>
-                    <td>
-                      <span className="td-project">
-                        <span
-                          className="project-dot"
-                          style={{ background: proj.color }}
-                        />
-                        {proj.label}
-                      </span>
-                    </td>
-                    <td className="col-created">{fmtDate(t.createdAt)}</td>
-                    <td className="col-ran">{fmtRel(t.ranAt)}</td>
-                    <td className="col-status">
-                      <Pill status={t.status} />
-                    </td>
-                    <td className="col-steps">{t.steps}</td>
                   </tr>
-                );
-              })}
+                ))
+              ) : (
+                pageItems.map((t) => {
+                  return (
+                    <tr
+                      key={t.id}
+                      data-od-id={`test-row-${t.id}`}
+                      onClick={() => navigate({ to: "/tests/$id", params: { id: t.id } })}
+                    >
+                      <td className="td-name">
+                        <Link
+                          className="td-name-link"
+                          to="/tests/$id"
+                          params={{ id: t.id }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {t.name}
+                        </Link>
+                      </td>
+                      <td>
+                        <span className="td-project">
+                          <span
+                            className="project-dot"
+                            style={{ background: colorForName(t.projectName) }}
+                          />
+                          {t.projectName}
+                        </span>
+                      </td>
+                      <td className="col-created">{fmtDate(t.createdAt)}</td>
+                      <td className="col-ran">{fmtRel(t.ranAt)}</td>
+                      <td className="col-status">
+                        <Pill status={t.status} />
+                      </td>
+                      <td className="col-steps">{t.steps}</td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
           <div className="table-foot">
@@ -325,7 +422,7 @@ export function TestsListPage({
       >
         {[
           { id: "all", label: "All projects" },
-          ...PROJECTS.map((p) => ({ id: p.id, label: p.label })),
+          ...projects.map((p) => ({ id: p.id, label: p.name })),
         ].map((it) => (
           <button
             key={it.id}

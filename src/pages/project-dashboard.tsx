@@ -1,20 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Trash2, X } from "lucide-react";
 import { fmtRel } from "~/lib/mock-data-new";
 import { AnimatedNumber } from "~/components/charts/AnimatedNumber";
 import { PassRateChart } from "~/components/charts/PassRateChart";
 import { StaggerRow, StaggeredDelta } from "~/components/charts/dashboard-anim";
 import { ProjectActivityFeed } from "~/components/ProjectActivityFeed";
-import { ProjectTestContextEditor } from "~/components/ProjectTestContextEditor";
+import { ProjectLiveProgress } from "~/components/ProjectLiveProgress";
 import { useAppProject } from "~/hooks/api/useAppProject";
 import { useProjectDashboard } from "~/hooks/api/useProjectDashboard";
 import { colorForName } from "~/lib/map-app-project";
 import { useProjectStream } from "~/hooks/api/useProjectStream";
-import { ProjectArtifactUploader } from "~/components/ProjectArtifactUploader";
-import { ProjectBoardPreview } from "~/components/ProjectBoardPreview";
-import { useUpdateAppProject } from "~/hooks/api/useUpdateAppProject";
 import { useDeleteAppProject } from "~/hooks/api/useDeleteAppProject";
+import {
+  Skeleton,
+  StatCellSkeleton,
+  MiniStatSkeleton,
+  ProjectDashboardSkeleton,
+} from "~/components/Skeleton";
 
 /* ------------------------------------------------------------------ */
 /*  Stat cell with the same A → B narrative as the workspace dashboard. */
@@ -61,14 +66,26 @@ export function ProjectDashboardPage({ id }: { id: string }) {
   const projectQuery = useAppProject(id);
   const dashboardQuery = useProjectDashboard(id);
   const stream = useProjectStream(id);
-  const updateMutation = useUpdateAppProject(id);
   const deleteMutation = useDeleteAppProject();
 
-  const [editing, setEditing] = useState(false);
-  const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-  const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!showDeleteModal) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !deleteMutation.isPending) {
+        setShowDeleteModal(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showDeleteModal, deleteMutation.isPending]);
 
   if (projectQuery.isPending) {
     return <ProjectDashboardSkeleton id={id} />;
@@ -123,50 +140,6 @@ export function ProjectDashboardPage({ id }: { id: string }) {
       : null,
   ].filter(Boolean);
 
-  const openEdit = () => {
-    setEditName(project.name);
-    setEditDescription(project.description || '');
-    setEditing(true);
-    setActionError(null);
-    setActionNotice(null);
-  };
-
-  const saveEdit = () => {
-    const name = editName.trim();
-    if (!name) {
-      setActionError('Name cannot be empty');
-      return;
-    }
-    updateMutation.mutate(
-      { name, description: editDescription.trim() },
-      {
-        onSuccess: () => {
-          setEditing(false);
-          setActionNotice('Project updated.');
-          setActionError(null);
-        },
-        onError: (err) => {
-          setActionError(err.message || 'Failed to update project');
-        },
-      },
-    );
-  };
-
-  const confirmDelete = () => {
-    const ok = window.confirm(
-      `Delete project “${project.name}”? This cannot be undone.`,
-    );
-    if (!ok) return;
-    deleteMutation.mutate(project.id, {
-      onSuccess: () => {
-        navigate({ to: '/projects' });
-      },
-      onError: (err) => {
-        setActionError(err.message || 'Failed to delete project');
-      },
-    });
-  };
-
   const streamBanner = stream.event?.message
     ? {
         message: stream.event.message,
@@ -174,6 +147,7 @@ export function ProjectDashboardPage({ id }: { id: string }) {
         type: stream.event.type,
         title: streamBannerTitle(stream.event.stage, stream.event.type),
         tone: streamBannerTone(stream.event.stage),
+        stepInfo: stream.event.stepInfo,
       }
     : null;
 
@@ -251,227 +225,365 @@ export function ProjectDashboardPage({ id }: { id: string }) {
             <span className="field-label">Pass rate</span>
             <span>{passRateLabel}</span>
           </div>
-          <button className="btn btn-secondary" type="button" style={{ height: 28 }} onClick={openEdit}>
-            Edit
-          </button>
           <button
-            className="btn btn-ghost"
+            className="btn-danger-icon"
             type="button"
-            style={{ height: 28, color: 'var(--danger)' }}
             disabled={deleteMutation.isPending}
-            onClick={confirmDelete}
+            onClick={() => setShowDeleteModal(true)}
+            aria-label="Delete project"
+            title="Delete project"
           >
-            {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+            <Trash2 size={13} style={{ color: "#ffffff" }} />
           </button>
         </div>
       </div>
 
-      {streamBanner && (
+      {actionError && (
         <div className="page-body" style={{ paddingBottom: 0 }}>
-          <div
-            className={`form-banner is-visible ${streamBanner.tone === 'error' ? 'is-error' : 'is-success'}`}
-            role="status"
-            data-od-id="project-live-progress"
-          >
-            <span className="banner-title">{streamBanner.title}</span>
-            <span className="banner-msg">{streamBanner.message}</span>
+          <div className="form-banner is-visible is-error" role="status">
+            {actionError}
           </div>
-        </div>
-      )}
-
-      {(actionNotice || actionError) && (
-        <div className="page-body" style={{ paddingBottom: 0 }}>
-          <div
-            className={`form-banner is-visible ${actionError ? 'is-error' : 'is-success'}`}
-            role="status"
-          >
-            {actionError || actionNotice}
-          </div>
-        </div>
-      )}
-
-      {editing && (
-        <div className="page-body" style={{ paddingBottom: 0 }}>
-          <section className="panel" data-od-id="project-edit-panel">
-            <div className="panel-head">
-              <span className="panel-title">Edit project</span>
-              <span className="panel-meta">Name and description</span>
-            </div>
-            <div className="panel-body" style={{ display: 'grid', gap: 10 }}>
-              <label style={{ display: 'grid', gap: 4 }}>
-                <span style={{ fontSize: 12, color: 'var(--muted)' }}>Name</span>
-                <input
-                  className="input"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  disabled={updateMutation.isPending}
-                />
-              </label>
-              <label style={{ display: 'grid', gap: 4 }}>
-                <span style={{ fontSize: 12, color: 'var(--muted)' }}>Description</span>
-                <textarea
-                  className="textarea"
-                  rows={3}
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  disabled={updateMutation.isPending}
-                />
-              </label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  disabled={updateMutation.isPending}
-                  onClick={saveEdit}
-                >
-                  {updateMutation.isPending ? 'Saving…' : 'Save changes'}
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  type="button"
-                  disabled={updateMutation.isPending}
-                  onClick={() => setEditing(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </section>
         </div>
       )}
 
       <div className="page-body">
+        <ProjectLiveProgress banner={streamBanner} reduce={reduce} />
+
         <div className="proj-stat-strip" data-od-id="proj-stats">
-          <ProjectStatCell
-            label="Open issues"
-            value={openIssues}
-            delta={
-              issuesToday && issuesToday.opened > 0
-                ? `+${issuesToday.opened} today`
-                : NEUTRAL_DELTA
-            }
-            direction={issuesToday && issuesToday.opened > 0 ? 'up' : 'down'}
-            index={0}
-            reduce={reduce}
-          />
-          <ProjectStatCell
-            label="Pass rate"
-            value={passRateDisplay ?? 0}
-            format={(n) => (passRateDisplay === null ? '—' : `${n.toFixed(1)}%`)}
-            delta={
-              passRateTrend === 'up'
-                ? '+trending'
-                : passRateTrend === 'down'
-                  ? '−trending'
-                  : 'flat'
-            }
-            direction={passRateTrend === 'down' ? 'down' : 'up'}
-            index={1}
-            reduce={reduce}
-          />
-          <ProjectStatCell
-            label="Test scenarios"
-            value={testScenarios}
-            delta={NEUTRAL_DELTA}
-            direction="down"
-            index={2}
-            reduce={reduce}
-          />
+          {dashboardQuery.isPending ? (
+            <>
+              <StatCellSkeleton index={0} reduce={reduce} />
+              <StatCellSkeleton index={1} reduce={reduce} />
+              <StatCellSkeleton index={2} reduce={reduce} />
+            </>
+          ) : (
+            <>
+              <ProjectStatCell
+                label="Open issues"
+                value={openIssues}
+                delta={
+                  issuesToday && issuesToday.opened > 0
+                    ? `+${issuesToday.opened} today`
+                    : NEUTRAL_DELTA
+                }
+                direction={issuesToday && issuesToday.opened > 0 ? "up" : "down"}
+                index={0}
+                reduce={reduce}
+              />
+              <ProjectStatCell
+                label="Pass rate"
+                value={passRateDisplay ?? 0}
+                format={(n) => (passRateDisplay === null ? "—" : `${n.toFixed(1)}%`)}
+                delta={
+                  passRateTrend === "up"
+                    ? "+trending"
+                    : passRateTrend === "down"
+                      ? "−trending"
+                      : "flat"
+                }
+                direction={passRateTrend === "down" ? "down" : "up"}
+                index={1}
+                reduce={reduce}
+              />
+              <ProjectStatCell
+                label="Test scenarios"
+                value={testScenarios}
+                delta={NEUTRAL_DELTA}
+                direction="down"
+                index={2}
+                reduce={reduce}
+              />
+            </>
+          )}
         </div>
 
         <div className="dash-grid" style={{ marginTop: 20 }}>
-          <section className="panel" data-od-id="proj-issues-today">
-            <div className="panel-head">
-              <span className="panel-title">Issues today</span>
-              <span className="panel-meta">
-                {issuesToday
-                  ? `${issuesToday.opened} opened · ${issuesToday.closed} closed`
-                  : '—'}
-              </span>
-            </div>
-            <div className="panel-body">
-              {issuesToday ? (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 12,
-                  }}
-                >
-                  <MiniStat
-                    label="Opened"
-                    value={issuesToday.opened}
-                    tone={issuesToday.status === 'success' ? 'ok' : 'warn'}
-                  />
-                  <MiniStat
-                    label="Closed"
-                    value={issuesToday.closed}
-                    tone="ok"
-                  />
-                </div>
-              ) : (
-                <div
-                  style={{
-                    color: 'var(--muted)',
-                    padding: '16px 4px',
-                    textAlign: 'center',
-                    fontSize: 12,
-                  }}
-                >
-                  No issue activity today.
-                </div>
-              )}
-            </div>
-          </section>
-
-          <section className="panel" data-od-id="proj-health">
-            <div className="panel-head">
-              <span className="panel-title">Pass rate · 7d</span>
-            </div>
-            <div className="panel-body">
-              {passRateDisplay === null ? (
-                <div
-                  style={{
-                    color: 'var(--muted)',
-                    padding: '16px 4px',
-                    textAlign: 'center',
-                    fontSize: 12,
-                  }}
-                >
-                  No recent automation runs — pass rate appears after tests run
-                  in the last 7 days.
-                </div>
-              ) : (
-                <PassRateChart
-                  data={[
-                    passRateDisplay - 4,
-                    passRateDisplay - 2,
-                    passRateDisplay - 1,
-                    passRateDisplay - 0.5,
-                    passRateDisplay,
-                  ]}
-                  color={projectColor}
-                />
-              )}
-            </div>
-          </section>
-        </div>
-
-        <div className="proj-meta-row">
+          {/* Primary column: Recent activity audit trail */}
           <section className="panel" data-od-id="proj-activity">
             <div className="panel-head">
               <span className="panel-title">Recent activity</span>
-              <span className="panel-meta">project audit</span>
+              <span className="panel-meta">audit trail · live</span>
             </div>
-            <div className="panel-body" style={{ padding: '4px 16px 8px' }}>
+            <div className="panel-body" style={{ padding: "4px 16px 8px" }}>
               <ProjectActivityFeed projectId={project.id} />
             </div>
           </section>
-          <ProjectTestContextEditor projectId={project.id} />
-          <ProjectArtifactUploader projectId={project.id} />
-          <ProjectBoardPreview projectId={project.id} />
+
+          {/* Companion column: Health metrics & Today's velocity */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <section className="panel" data-od-id="proj-health">
+              <div className="panel-head">
+                <span className="panel-title">Pass rate</span>
+                <span className="panel-meta">7d trend</span>
+              </div>
+              <div className="panel-body">
+                {dashboardQuery.isPending ? (
+                  <div
+                    style={{
+                      height: 120,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Skeleton width="100%" height={80} borderRadius={6} />
+                  </div>
+                ) : passRateDisplay === null ? (
+                  <div
+                    style={{
+                      color: "var(--muted)",
+                      padding: "16px 4px",
+                      textAlign: "center",
+                      fontSize: 12,
+                    }}
+                  >
+                    No recent automation runs — pass rate appears after tests run
+                    in the last 7 days.
+                  </div>
+                ) : (
+                  <PassRateChart
+                    data={[
+                      passRateDisplay - 4,
+                      passRateDisplay - 2,
+                      passRateDisplay - 1,
+                      passRateDisplay - 0.5,
+                      passRateDisplay,
+                    ]}
+                    color={projectColor}
+                  />
+                )}
+              </div>
+            </section>
+
+            <section className="panel" data-od-id="proj-issues-today">
+              <div className="panel-head">
+                <span className="panel-title">Issues today</span>
+                <span className="panel-meta">
+                  {dashboardQuery.isPending ? (
+                    <Skeleton width={90} height={11} borderRadius={3} />
+                  ) : issuesToday ? (
+                    `${issuesToday.opened} opened · ${issuesToday.closed} closed`
+                  ) : (
+                    "—"
+                  )}
+                </span>
+              </div>
+              <div className="panel-body">
+                {dashboardQuery.isPending ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: 12,
+                    }}
+                  >
+                    <MiniStatSkeleton />
+                    <MiniStatSkeleton />
+                  </div>
+                ) : issuesToday ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: 12,
+                    }}
+                  >
+                    <MiniStat
+                      label="Opened"
+                      value={issuesToday.opened}
+                      tone={issuesToday.status === "success" ? "ok" : "warn"}
+                    />
+                    <MiniStat
+                      label="Closed"
+                      value={issuesToday.closed}
+                      tone="ok"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      color: "var(--muted)",
+                      padding: "16px 4px",
+                      textAlign: "center",
+                      fontSize: 12,
+                    }}
+                  >
+                    No issue activity today.
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
+
+      {mounted &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {showDeleteModal && (
+              <motion.div
+                className="run-modal-overlay"
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  background: "oklch(0% 0 0 / 0.45)",
+                  backdropFilter: "blur(6px)",
+                  WebkitBackdropFilter: "blur(6px)",
+                  zIndex: 1000,
+                  display: "grid",
+                  placeItems: "center",
+                  padding: 24,
+                  animation: "none",
+                }}
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                onClick={() => {
+                  if (!deleteMutation.isPending) setShowDeleteModal(false);
+                }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="delete-modal-title"
+              >
+                <motion.div
+                  className="run-modal"
+                  style={{
+                    width: 420,
+                    maxWidth: "100%",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 12,
+                    position: "relative",
+                    boxShadow:
+                      "0 24px 80px -16px oklch(0% 0 0 / 0.28), 0 8px 24px -8px oklch(0% 0 0 / 0.12)",
+                    overflow: "hidden",
+                    animation: "none",
+                  }}
+              initial={
+                reduce
+                  ? false
+                  : { opacity: 0, scale: 0.95, y: 10 }
+              }
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={
+                reduce
+                  ? { opacity: 0 }
+                  : { opacity: 0, scale: 0.97, y: 8 }
+              }
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="run-modal-close"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleteMutation.isPending}
+                aria-label="Close"
+              >
+                <X size={15} />
+              </button>
+
+              <div style={{ padding: "24px 24px 0" }}>
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    color: "var(--danger)",
+                    marginBottom: 8,
+                  }}
+                >
+                  <Trash2 size={12} />
+                  <span>Delete project</span>
+                </div>
+                <h2
+                  id="delete-modal-title"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: 18,
+                    fontWeight: 600,
+                    letterSpacing: "-0.02em",
+                    margin: "0 0 8px",
+                    color: "var(--fg)",
+                  }}
+                >
+                  Delete “{project.name}”?
+                </h2>
+                <p
+                  style={{
+                    fontSize: 13,
+                    lineHeight: 1.55,
+                    color: "var(--muted)",
+                    margin: 0,
+                  }}
+                >
+                  This cannot be undone. All linked test scenarios, activity logs,
+                  and project configurations will be permanently removed.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  gap: 10,
+                  padding: "18px 24px 20px",
+                  marginTop: 16,
+                  borderTop: "1px solid var(--border)",
+                  background: "oklch(99% 0.002 240 / 0.5)",
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  style={{ height: 32 }}
+                  disabled={deleteMutation.isPending}
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn"
+                  style={{
+                    height: 32,
+                    background: "var(--danger)",
+                    color: "#ffffff",
+                    borderColor: "transparent",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                  disabled={deleteMutation.isPending}
+                  onClick={() => {
+                    deleteMutation.mutate(project.id, {
+                      onSuccess: () => {
+                        navigate({ to: "/projects" });
+                      },
+                      onError: (err) => {
+                        setActionError(err.message || "Failed to delete project");
+                        setShowDeleteModal(false);
+                      },
+                    });
+                  }}
+                >
+                  <Trash2 size={13} style={{ color: "#ffffff" }} />
+                  <span>{deleteMutation.isPending ? "Deleting…" : "Delete project"}</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body
+    )}
     </div>
   );
 }
@@ -488,61 +600,6 @@ function streamBannerTitle(stage?: string, type?: string): string {
 
 function streamBannerTone(stage?: string): 'success' | 'error' {
   return stage === 'error' ? 'error' : 'success';
-}
-
-function ProjectDashboardSkeleton(_: { id: string }) {
-  return (
-    <div
-      className="app-pane"
-      id="pane-project-dashboard"
-      data-od-id="pane-project-dashboard-loading"
-    >
-      <div className="page-head">
-        <div className="page-head-text">
-          <nav className="detail-breadcrumb" aria-label="Breadcrumb">
-            <Link to="/projects">All projects</Link>
-            <span className="sep">›</span>
-            <span className="current">…</span>
-          </nav>
-          <h1 className="page-title">
-            <span
-              className="project-dot"
-              style={{ background: 'var(--border)', width: 10, height: 10, display: 'inline-block', marginRight: 10 }}
-            />
-            <span
-              style={{
-                background: 'var(--border)',
-                opacity: 0.5,
-                display: 'inline-block',
-                height: 18,
-                width: 220,
-                borderRadius: 4,
-                verticalAlign: 'middle',
-              }}
-              aria-hidden="true"
-            />
-          </h1>
-        </div>
-      </div>
-      <div className="page-body">
-        <div className="proj-stat-strip" data-od-id="proj-stats-loading">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="stat"
-              style={{
-                background: 'var(--border)',
-                opacity: 0.4,
-                height: 70,
-                borderRadius: 6,
-              }}
-              aria-hidden="true"
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 function MiniStat({

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4c0cebecaa9a2f225278e82fcbc5ba6f14ac16323ba675957c6eeefe0d2c8244",
+  "claims": [
+    {
+      "id": "claim_c730dd79a1ad4d73900911a19b57d634",
+      "statement": "Router creation consumes the generated route tree, imports authentication bootstrapping before construction, enables scroll restoration and intent preloading, and requests browser view transitions.",
+      "evidence": [
+        {
+          "resource": "repo://src/router.tsx#L1-L21",
+          "version": "repo-lines-v1:sha256:ab56d4fda85392e480841b7317bf14b024cb340c244cd2410c8cb4d95b58d095:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjYWMxNzFiNDFiMzZkYzUyNjY1Zjc2ODIyZWZlODQ5ZDNhZTgzOWJmMjg5ZGE0MTc0ZGFjODUwNmI4ODM2OWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ODE3NTVhMTM2YWNiMDRlMjgyY2ZjNGFhZWI5M2RhNjAxNmQ0ZTUxMDJkY2YxNjRiMGYwNTRiMTdiYTJjNWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1OGIxZmJhMmRiNmM0NTRjZTcxMjUwZDhmNWRhNDRlZTM3NzkyNGMyNDA3OGMyOGYxMWQ3YjQ2MDZiZWRjNDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_48ddfc3616944c419f138fcdb462ce56",
+      "statement": "The generated route tree is derived from src/routes and explicitly warns that direct edits will be overwritten.",
+      "evidence": [
+        {
+          "resource": "repo://src/routeTree.gen.ts#L1-L33",
+          "version": "repo-lines-v1:sha256:607ed6cd5c06aad3c313194a6c0e2a2f134c001e126eb37c4d95d6d95f69711f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmZDcyNThmY2I5NjAxODJmMGNmYmVhODVhZDA0MWJmNGQ2MWU5NjM3MzExYzFiMjk1NDNmOTM0YTliZThjOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzZjhiODY4YTFkZDEwOWNiYmM4OTk2MmEzNDQyZDZmMDY1YmI3YTIzYWRiZGVjMzJiMTI5NTg4ZTIyMjU3OWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4OWJmNzIyMGIwYzExYjc2NTNhOTM2ZTVjYmZkZGUxYzgwZGExYWI4MGE2OGMyZGNiN2E1MjY3ZjY2N2U0NTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_52d60d21fcc34ada989b91343aa7c685",
+      "statement": "The root route treats only /, /login, and /about as public; protected routes are allowed during SSR but redirect to /login on the client when no session ID exists.",
+      "evidence": [
+        {
+          "resource": "repo://src/routes/__root.tsx#L25-L58",
+          "version": "repo-lines-v1:sha256:13cf86e1977becb727b108dc1df5d9f893a075ffbbad3d7505361c3615959c3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMmM5M2UwZDFhYmRlZTM5M2UxYTU0MzUyODZmZDMwMmQyMGQ1ZmQwMmVhZGVmMzFjYmNiZTc4YTdiZDk5ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0YTVjMTc5MzdkODQxYmIzYWIwYmM1ODUwNzI0OWUwZmRhY2VjZWExMDk5YzgxYTA2OTE5Nzc2Mjk4NTNlNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4YjE4MGVlZDczODI2ZTdiNjZlYTU3YTJhODAyZjU0NGYzOTg2ZTI1OTIwM2FmNzBkZTQ4OWRiNWE3NmQ4NWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_36c27eaf888d4c168730ce0d053caa97",
+      "statement": "The root document nests QueryClientProvider, SessionProvider, and AuthBootstrap and renders public or error content without AppShell while wrapping ordinary protected content in AppShell.",
+      "evidence": [
+        {
+          "resource": "repo://src/routes/__root.tsx#L60-L98",
+          "version": "repo-lines-v1:sha256:bc6ef4432c79ca66089c961a8fa635e8a06cfd45d4f2a54e3fac20c5ae6bbfe9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlODE4NzIwNWJhNDUzNTkzYmM5NDcwN2Q2YTAwYmJhMDIzZTcyYjVmYjY2ZjQ2MzA2ZTk3NjljZGIyNjMwNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MjY3OTM1ZmM2MzM0NjVkODQ4YjQwYTRlZDY5NjdlN2I3YTMyM2Y4MWNkNTNjMTEwYWUyMTAyOTY4N2FhMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzZjA0MWEzOTEwMTU3MzUxMTZmMzZhMDliYzg0Y2VmYmIyNDU5NzBmYTI2ZWQ0OGFkZWQ4NmQxMDdhZGE1NDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_917d8d474a2f44deaa9ecc3cd40897a9",
+      "statement": "AppShell provides a persistent sidebar and main content node whose app-main view-transition layer applies only to authenticated app pages.",
+      "evidence": [
+        {
+          "resource": "repo://src/components/AppShell.tsx#L1-L20",
+          "version": "repo-lines-v1:sha256:833954088fd167c4a5f1d91ab21de0dcc4ffc67d7a3bfd875acf5f2dd9933692:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3Y2U2MjRmYzU2NzRlZGVlN2ViYjc4OWFlMGZlZWI0NTc0MzIwMDRlOWIyOTRiNzY0MzljMmIzNDU3YzlmNTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MjY3OTM1ZmM2MzM0NjVkODQ4YjQwYTRlZDY5NjdlN2I3YTMyM2Y4MWNkNTNjMTEwYWUyMTAyOTY4N2FhMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cb0ef819f37a46d08c508ee32d6a03e6",
+      "statement": "The sidebar loads live projects, persists collapsed and expanded navigation preferences in localStorage, and automatically expands the project identified by the current URL.",
+      "evidence": [
+        {
+          "resource": "repo://src/components/Sidebar.tsx#L126-L151",
+          "version": "repo-lines-v1:sha256:3efa7e85d85feba82b99cb75d64e47869232f45072cb228385c2a9eeea45ce0d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4MTNiYjlhYmI3MjUxNDU0NTkxYzNjYjJhODg2MjBmMzNiYzYzNGZmZWZlMTM0ZDQ1MjUzYmE4NTJkODAyY2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzYjJkMDU1NThmMjE1ZGQzOGE3YTlkZmFkMjU4Yjg5MTRmZmYzZjczNGIyMjY3ZGU3YjJmNDQ4MWQ0NTkwOWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlOWE0YzE4ZjA1NWM4MDkwNjM4Y2UzZDA0NTc4NjRiZjkyMWRmOTk3NTg1MGZmZTY4N2EzNmIzODRiMzJmZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0MjZiNGIyYjlhZDNmMTdiY2RiNTJmZDYyZTdlY2ZiYjU3NzViZjljYzBkNTY5YjAxNzVhNzBmYWFmNWQ2ZTIifQ"
+        },
+        {
+          "resource": "repo://src/components/Sidebar.tsx#L184-L217",
+          "version": "repo-lines-v1:sha256:22dac2a5ef91e7f75d93e1f2751fdba36e5736f7c59f4756a1a27e543595fbbc:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiZTJiOGNiODRhNmVmYmI4NTQwNWU1YzQxNTk1NWU4YzhhYzhiOTM5ZDAxMGEzMDE5NTc5YzhmNWIwMzJhY2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjM2IwNjA2ZjkyMzdhZGE5OTA4ZTgwZWFlZGU0ZGUyMzQyMmRhYzQ0OTk4NmQyYTIxN2M3MjZjZDZkYmU0OTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzYzBkMTFiYmZhMWQyMWQ4YTc5ZTNhZDY0YzUyZmI2OTMyMmUzZWM0Y2EwZWY5ZTRjMmRlNTliMjA4NTE3OTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhM2MxMzYwYmZiZjE5M2JmMTgxMmFjODJjOThiMTIwMGIzNGI5M2YwNTEyMGI2NzIxYzllNGMzODg2NGFhODcifQ"
+        },
+        {
+          "resource": "repo://src/components/Sidebar.tsx#L96-L109",
+          "version": "repo-lines-v1:sha256:c16d3927facf16c1b9a70eb8882c24307544ea26617fc55b9c4ecb82b2da3ef8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNGY5ODk4ZmMwYTYxYzE4NjA2NjIwMTVhMzM1NzAwNjg1MGYxMWMwYTgzMmFkNjk2NTM5NDMzZjdhYjk5ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhOTVhYTViNGE2ZjM2NjhhZmQ5NGZjZGM0ZjgxY2E0YmExNzNhYWYyYTYzN2Q5NzY1YmExNmFiMTdjZTI4ZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1ZDM5YWM1MjFjOWRiMTQ3MzBmMTVjZDU5MGYxYzI1YzA2MTJmOTQwOWNjMjgxNGY1MDZlMDFhNDAzMjVjMzMifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}

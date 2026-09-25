@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "pages": {
+    "/openwiki/architecture/data-access-and-state.md": {
+      "pageVersion": "sha256:585e727b0c3c4a6d7ea47c643a15b8880982e153caa4dbc5253896827620bfa3",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    },
+    "/openwiki/architecture/runtime-and-routing.md": {
+      "pageVersion": "sha256:4c0cebecaa9a2f225278e82fcbc5ba6f14ac16323ba675957c6eeefe0d2c8244",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    },
+    "/openwiki/operations/development.md": {
+      "pageVersion": "sha256:51fcc57faca5d720969087431bdc45b966553a0225d95813fcee11ee69b73298",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    },
+    "/openwiki/quickstart.md": {
+      "pageVersion": "sha256:ccb1d9f18acf92657c67d15200648a99d7d5fdefc5086418a5d557a8e2dd7f36",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    },
+    "/openwiki/workflows/authentication.md": {
+      "pageVersion": "sha256:8cc947ca8cda057cabf58c2f110c8d44b56b47b10423246929bc69c4b95397f9",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    },
+    "/openwiki/workflows/project-lifecycle.md": {
+      "pageVersion": "sha256:0b87e47f022f5b8e0bfffaab67e47df599b92bc504aa46ae37995e1c95c2a149",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    },
+    "/openwiki/workflows/specs-and-gitlab-issues.md": {
+      "pageVersion": "sha256:f14cf3698080a99060a067a6a7e261f6736a31a739eb2aa57e193a5036716d23",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    },
+    "/openwiki/workflows/test-scenarios-and-runs.md": {
+      "pageVersion": "sha256:cf64733ee63570efc867a804d14a557fbd24433cb1e032283fb455aeb43c797f",
+      "completedBy": "codex",
+      "completedRunId": "b5ebdccc-18d1-4100-8e42-e27db5364966",
+      "gitHead": "d2354941b77ee1aeda4faf4a20761c13bad1a1b3",
+      "sourceFingerprint": "sha256:b9f11c4f6a9e6f9f2a5c02bf290a90829f60b7c9e6d9b01b13cdbadb9baeafbb"
+    }
+  }
+}

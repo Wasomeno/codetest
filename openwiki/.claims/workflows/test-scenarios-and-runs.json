@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:cf64733ee63570efc867a804d14a557fbd24433cb1e032283fb455aeb43c797f",
+  "claims": [
+    {
+      "id": "claim_e70624e44d884d448b4848ed0abc4a6c",
+      "statement": "The backend scenario model separates processing, automation, and manual categories/statuses and represents scenarios as sections containing ordered test cases and steps.",
+      "evidence": [
+        {
+          "resource": "repo://src/types/test-scenario.ts#L113-L179",
+          "version": "repo-lines-v1:sha256:a7dc6090bd06ad488e2f8121ba81d3fa79fd0b1fa1aa64a993ef76e9006771f3:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0YmU0NDA5MzkwNmQwODlmMzUzMzAyN2QxZDNjNTE0MWJkMzRhY2ViZTg3ZGJjOTFjZGExMDAzZjU2OTg0OGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5NmQzM2ViYWY3NGI4ZjNlODYwNWVhNTkyNzUyMzkxY2E2NTQzYjFlNTI4NjA4YjNjMmJiYjI1Zjk4MTJiMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/types/test-scenario.ts#L12-L89",
+          "version": "repo-lines-v1:sha256:35f7c09a8c4d1c85c1aea4da3da3b37100cad253d3e1adbab395d0eb76b2dbae:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0OTU2YjllMTg4ZTM2MDBkYWNiMzZiYjY4ZjhhMzczMjE3MmQyMjE3OWQwODk0MzhjM2Q1MWI4NjMyMzRhNzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg3ZjdjZDYxZjM1OWQ4ZjQzYmVmZjQxZWZkM2ZmOWYwNDljOTE4OTNiZWNlZThkYjJlOTdmYWE4OTAxM2ViZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExNzE2ZDkyMGJmZWM2ZTUzMDE4NDM5ZDNhOWJlNTIwYmE3NjVhMjUwMWExNmRiYTQ0NDQ1ZTNhMWRiMzIxYjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_27ca51ec89594a668396f9d1eb8b56c4",
+      "statement": "The scenario API supports multipart upload, flexible global/project listing, individual and project-wide synchronization, and polling a structured project import status.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/test-scenario.ts#L41-L82",
+          "version": "repo-lines-v1:sha256:98bd7588a848ad826a05a2c6a27190177888f0357d4f567a5099578376e970b6:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViYmQ0NjQ5ZmY0MGU0OTdjMGM0MjQ0M2U3NzBhMTdjY2FmNzNkM2Q3ZDM2YmZlMDcyMGEzNDNhNTUxMzA5OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzNTk5MDk4ZTY5MGQwNGI2MWZhZmE5YWM4OGZjNTAyMjExMjZhZTA5MjQxZWRiOWUwMTg4ZGEzZDEyMDQ5YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5MTg3NTcyZWUwNzg2YjI5OTQyNTMxYWY0Y2I1ZTJjOTZhODkxYzk4MDE0ZGFjNzVkMGJmNzRhNDAzYjlhNzcifQ"
+        },
+        {
+          "resource": "repo://src/api/test-scenario.ts#L93-L211",
+          "version": "repo-lines-v1:sha256:67caf4ddf12c57deb441bd218096f9af298bdfcb8a8f133f29fbb9188777cd5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3YzdkZGM1ZDZiZmJlNjQ0ZTg3ZDg2ODA0YzIzMThmYzk3YThjMThlOTQ1OWQwZTI5YmM0MzYwMjI1NmJiN2ZmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ZDVjZDJmYjRmM2RmODg0NTE1MjU1YjM5NTIzZjJmOGI1NDcyYmVlYTlmNTY2ZmZjYTIwNGRiODAyNTYxMDQxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmOWJkNGEwMmU1OGVmMzliNmUyNjdhYTg2NjA4NmU0NDZkNWM3YTIzZDI0MmJiNDc4YzE5N2RlNjc3ODZiMDFmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlMTAwNWRkODk2MWVmZDlhMjI3NmJjM2ZhYmMzZmRmMzQxMGYzNmE3Mjg2YTIzMGVmY2M2ZjUwNWVkZjRlNWEzIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_d0012cf498084b85ab1589e3c04ac47a",
+      "statement": "The scenario API supports scenario retrieval/deletion, test and automation generation, manual results with file evidence, scenario/test-case updates, category assignment, case add/delete/run/reorder, and bulk scenario deletion.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/test-scenario.ts#L213-L375",
+          "version": "repo-lines-v1:sha256:dbc3424319487004ab436dd6b6f759455a95cd107d8addd63385413576dc7850:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3YzI1YzMyYmJkY2MxYzA2ZjMzOTM5MGI1NzE0MmEyMGI4NDI3NWIyOTNjN2M3ZDYzNjE2M2VmMTQzMzdlMWFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ZDVjZDJmYjRmM2RmODg0NTE1MjU1YjM5NTIzZjJmOGI1NDcyYmVlYTlmNTY2ZmZjYTIwNGRiODAyNTYxMDQxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjN2QzNWIzYjZjY2Q2NDY4YjllODY2MjBjODk5ODNhZWY0N2VjMjVkMGJmNjBiMzg3YjQ4MWY5ZWQ5YTFlODJhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzZGYxMjRkOGZjNWM0ODc1YzFiN2JmMDY5MDFkMjIxZDM2ODcxOGRkMjc5NjM1NTczYzkwMjc0ZDhjMDFlOGY2In0"
+        },
+        {
+          "resource": "repo://src/api/test-scenario.ts#L377-L455",
+          "version": "repo-lines-v1:sha256:5893b505ad8e6a140247de9e1d5e2752448137e1621bf672d6909b6e56ba7e3b:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNmQ1Yjc0N2M1ZDg5MmM1ODBiNTY3YjQxYTQwZWVjZWYyMjM1OTIzMzgwYWI0ODQ1NDYzZmQ5ZjJmNTM0YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3ZDM1YjNiNmNjZDY0NjhiOWU4NjYyMGM4OTk4M2FlZjQ3ZWMyNWQwYmY2MGIzODdiNDgxZjllZDlhMWU4MmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_49e854f5d626472c9122d5547bd7a055",
+      "statement": "No scenario duplication or clone operation is exposed by the repository's testScenarioApi.",
+      "evidence": [
+        {
+          "resource": "repo://src/api/test-scenario.ts#L93-L455",
+          "version": "repo-lines-v1:sha256:26b9ec440f0eca75c37c6ced17aaac5a059ee614f57a4dcfb158dd4b4f4be16a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3YzdkZGM1ZDZiZmJlNjQ0ZTg3ZDg2ODA0YzIzMThmYzk3YThjMThlOTQ1OWQwZTI5YmM0MzYwMjI1NmJiN2ZmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ZDVjZDJmYjRmM2RmODg0NTE1MjU1YjM5NTIzZjJmOGI1NDcyYmVlYTlmNTY2ZmZjYTIwNGRiODAyNTYxMDQxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmOWJkNGEwMmU1OGVmMzliNmUyNjdhYTg2NjA4NmU0NDZkNWM3YTIzZDI0MmJiNDc4YzE5N2RlNjc3ODZiMDFmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhYTFkMWE2MzM5MDIyOWM3OTgzNDdlODNhMDQwNTQ0MWM5NDAwMDM1Mjg0YWQxNjhjMWJmNmNkZjFkNzBhMzcwIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_0eab6527ece14a7ab9dc055a7128d5bf",
+      "statement": "The current tests list filters, sorts, and paginates the in-memory TESTS fixture, including when mounted under a project-scoped route.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/tests-list.tsx#L1-L21",
+          "version": "repo-lines-v1:sha256:2d0165e67414174c0d747e9d28b30b46ba972047525cf968c82d717d0f206c86:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjODVlYzBjNTNkNGIzMTJhYzllZTZiMjQwOTM4OGFhZGY4NWZkNTI5NTQzMDExNWM0NTFiZGZhOTg3MjM4ZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjYzIxMjBkYTcxZWYxOWNiY2MzNWE3ZmYwZjcxYzA1Mjk1ZDZkODBmMDNlYWI0ZGNhZTlhM2ViZjhmYjYyYmYifQ"
+        },
+        {
+          "resource": "repo://src/pages/tests-list.tsx#L80-L120",
+          "version": "repo-lines-v1:sha256:ace5b38091d47cafabfb5389ebdcc298514434e995812cac78718d35a879951a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzODIxZDRhM2Q0ODc0YzE1MTY3MzI4MTlhNjJhMjk4YjRjOTU1N2JiNjQzNTQxYjQxNzNjODUxNTVkZWY5YmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3OGEwMzVlYTFlYWIyYTZmZGU4MjA3ZjEwNjJmNmYwNmE3M2NiYTA5N2EyODBjOTExM2ExY2NkOGQxN2I2MDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmODdiZDMwOWY3NTFkZDEwZjBlMWQxMTljOTExZjYzMjNlMzNmZWRkNjQ3NzFkY2YyNjU0YjJkMjY5ZjJiOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZjA3ODQ4MjE2ZGY4MjQ3YTZlMTcxMzgxZjg2OWQ4NzUyZGI0OTQ3MThjYjcyZDk2ODA4NWY0OTY3OWE0NmYifQ"
+        },
+        {
+          "resource": "repo://src/routes/projects.%24id.test-scenarios.index.tsx#L1-L14",
+          "version": "repo-lines-v1:sha256:b516ceba75465f052ec8dc0a602ed695ecdd615c0e2a8b3d686111f2964554ad:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjNWVkNTk5MjlhYTkyN2RiZWVjZDA1MDQyYWY1ZjZiMGRlYmE2OWRhNDAyOTU1NzAxMzY4MjVmYzMyYzhiNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe48ea8dd11c45cf8b6722aa94077b29",
+      "statement": "The tests list's Export CSV and New test controls are explicit not-implemented alerts.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/tests-list.tsx#L200-L229",
+          "version": "repo-lines-v1:sha256:218d1f4bdbc626291f975be9737401f0fc731f328eb006e72d41ee7409cf7be7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMjE1ZmQwM2NmYzJiZWViZjgwNGExN2FjNWU5NDc5NTFmN2NkMmRjMDU2MDUyMjQ5OWM2MDZmZGJjZDcxODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiODY2YzRlYzM5Y2M0NGNkNmFjNjMwMGIzYTk1OGY2MWUyN2VjOWE3Y2RhMDFlMjNiMmIwN2M3NWE5M2NmN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmNWNhY2Q0ZTZlMzgzZGVhMDRkZjliMWZjMWFhOTczNTNkOTBiZjZmZGM2YWU4ODNmOTY4YWZiYzE0NWYwMmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_987edc6b036a44cb92a6deeb923fec9e",
+      "statement": "Test detail resolves fixture data with a first-item fallback, and its Edit and Run now actions are placeholders rather than API mutations.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/test-detail.tsx#L632-L698",
+          "version": "repo-lines-v1:sha256:157366c9369ba5258b165a797e00b526fb0d3cc37d30c90142299cc12c8bf6d7:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MmYzMThjNTdlNTY5ZThmOGU3YjkxOGNhNjU4NDgwYzY5Y2RkMWQyZGIzNjE1MzFmZTFkOWZiN2U1MDlmYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5OTAwNTlmNDhjYTU2ZjZiNTBmZGM2OWExNWM3YjdlNjMzY2MxZTEzNjA4ZGFhNTBlZDkyM2JlYjBmNjM2ZmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjOTg2ZWZiY2YxYjNiNzE1ZmJhNGIxN2U5NGExODlmODQ0ZTlkZWQ5YmUxNDc3NWUzZGViOGNkNDExNjVhYzgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4abe64d1957c48a68cc917d3f26827f1",
+      "statement": "Run detail resolves fixture run data with a first-item fallback, always uses the first fixture test, and imports its steps and log from mock-data-new.ts.",
+      "evidence": [
+        {
+          "resource": "repo://src/pages/run-detail.tsx#L1-L10",
+          "version": "repo-lines-v1:sha256:84d6ecdd300dd1f8966d59d7b22dc2fa41172c5e228dad238a239a88ed420230:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3NzI3YWJlZmM0Yjk0ZjVkYjFmYmM4ZTA4OGZlZDgzZjA0MDhmODA1YTlkM2VkM2NmYTQ5Mzg2ZjI2MmI4N2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNmE1MjBjYjY2YWFkNzZhYmNhYjQ5Y2E0MGNlM2FhZDBkMTRmNDNlMmJiNGFmYTUyNWJmZmQzNTQ2MDViYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmYTU0ZDY5MmYxYTVkMmQ4N2JkMjNiOGRhMDUwNWJlMWNiNmVhZjEwMmI2MjMyNjAyMmViOGJhOGFlM2NhYWUifQ"
+        },
+        {
+          "resource": "repo://src/pages/run-detail.tsx#L68-L77",
+          "version": "repo-lines-v1:sha256:915afb8df63649a1dc13922fc21266d3229c4ac3c625a32980ac574f45d04c10:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzYjI3NmE3OTFhN2RhMTkyYmU3ODc5YWQ3MDJmMzM1MDJlYWYyYTk0MDM5N2E4ODczYjJlMGM2YjRlNzFiZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1OGU5YTkzZmJhNTA5NzUyZDc3MGMyYWVkNTVkY2VmNzI5MDcxMWFjNTQxZDE5ZDQ3MWVjNGU0NDc5ZDUxZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyYzdlZGY5NmExMDAxNTIxZDcxMjBmMTU2MDRlZDBhYjdiNzEyNjJiZDFlYWY5YTBiMGNiZWNlYjUzZjZiMjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_439efbc9280e4cf8abf10b355dd43acc",
+      "statement": "mock-data-new.ts declares itself the source of truth for the UI migration and defines fixture projects, tests, steps, recent runs, and run logs.",
+      "evidence": [
+        {
+          "resource": "repo://src/lib/mock-data-new.ts#L1-L3",
+          "version": "repo-lines-v1:sha256:a2a33312b15a645e072611b3f021f6a846b1391b1c064913678b5c0bedff8473:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk3MjQxMWU4MzhlMWQxY2U5YTg1NWI5NjFkMDRiZGM1MjVlYTQ2NDAxYTk3ZDdkNDQxZThjZTZkYWViOTViMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGIzNTU5NjViY2E0MTE0NDUyMWU5NWU1ZmNlNWIxM2ExMGM3ZTFhOGEwOGRkNmViNzA0N2NkNDg0NjE1ODI2NCJ9"
+        },
+        {
+          "resource": "repo://src/lib/mock-data-new.ts#L21-L111",
+          "version": "repo-lines-v1:sha256:0188571e488e864ef209ff6b47775411fab9b5e3b4d4fca5d09fdf58cda9983c:eyJzZWxlY3RlZExpbmVDb3VudCI6OTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5ZjE1MjVhZWZkMThkZTdmYWI3MTRkOTNlNTk2ZDhmMTk3NzAwZDA0ZDg3MzIyYzc1OTViMWE2NjA0Y2E3YWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMmQyYzBkNmRjNWU3NGQ5MmZhMTRiOTFkYmVhMjY0MDkwYmViMzVmZGI5MTg4ZDliMzQxMTgxZGNlOWY0Y2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiOThiZmJmZDRmMzY4YTk1NDFkMDdhOGYzMGFkMjEwZGRhNjI4MDZlMzM3NTZiZWQ3M2U5NTFmODJiMjlhYjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkYjAzNzNiNjgzYjQ0NWI2ZGY3YjA3YzgzZmQ2ZmNjYzRjYzhiYTM4MzEzZTMyMWI4MDgyNTFmZjEwMjVlOTUifQ"
+        },
+        {
+          "resource": "repo://src/lib/mock-data-new.ts#L221-L280",
+          "version": "repo-lines-v1:sha256:5530326e5b0aabc63c307f0998f15c88d8d711ee17dbf2dac54013068276c52b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OWQ5NTcxMDAwYmVjNjNlNjYyZGY1YmRlOGNjYjBlMWQ3NTE4YWUxODVmZmY4ZTAzYjEyM2Y3ODM2MTQxNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmZGQ3MGFiYTc2YWMxNTAzYTU5MzBiNGZhMDA3YzI3ZDkwZjE5MDc1OGRkMDNkMDc5N2NlMjZjZTRhZmQ1MzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwYmZlOWQ4ZjA1MjI3MDA2Nzc5NGVhOGQxMmUyNmU0Mzc0NmNhZjE3ZjFmOTMyMGY5MjllYzdmNmY5OGU2MTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1MDE4YTcwMTg3Mzg2MjY3MWJiNWIyYjNjYjQ5NmE4OThjYTIyZWE2MzgwOTI4NTU5MWI5ZWE4MjQ0MjQ1MmUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}

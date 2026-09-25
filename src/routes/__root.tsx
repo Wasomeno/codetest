@@ -26,6 +26,11 @@ import appCss from '../styles.css?url'
 // AND skip the auth guard.
 const PUBLIC_PATHS = new Set(['/', '/login', '/about'])
 
+/** Full-bleed document workspace (no sidebar). Still auth-gated. */
+function isShelllessPath(pathname: string) {
+  return /^\/specs\/[^/]+\/document\/?$/.test(pathname)
+}
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -60,6 +65,7 @@ export const Route = createRootRoute({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const isPublic = PUBLIC_PATHS.has(location.pathname)
+  const isShellless = isShelllessPath(location.pathname)
   const matches = useMatches()
   const isErrorPage = matches.some(
     (m) => m.status === 'error' || m.status === 'notFound' || m._notFound,
@@ -79,7 +85,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <SessionProvider>
           <AuthBootstrap>
-            {isPublic || isErrorPage ? children : <AppShell>{children}</AppShell>}
+            {isPublic || isErrorPage || isShellless ? (
+              children
+            ) : (
+              <AppShell>{children}</AppShell>
+            )}
           </AuthBootstrap>
           </SessionProvider>
         </QueryClientProvider>

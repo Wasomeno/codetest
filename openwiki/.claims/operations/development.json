@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:51fcc57faca5d720969087431bdc45b966553a0225d95813fcee11ee69b73298",
+  "claims": [
+    {
+      "id": "claim_bd6b398e38ef49e98a6487c485d4e1ed",
+      "statement": "The repository's declared command surface uses Bun to run Vite development on port 3000, generate routes, build, and preview, and declares no test, lint, or standalone typecheck script.",
+      "evidence": [
+        {
+          "resource": "repo://package.json#L1-L13",
+          "version": "repo-lines-v1:sha256:ba5d850545f3ae356eeaefccb0802fde5852a1f12ebfb323cbb087fa5310bc46:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyMTFmYTliYzRjZTkyMTZiZjk0ZmY5MWZkYjJiMjJjZjNlZTQ2ODE4OWJjZWRmM2E0OTU0ZGI5MGY2MGFiOTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_70c03f5c9a2e4d8ba3f121b8b564d3b9",
+      "statement": "Vite loads environment values, proxies /api to VITE_API_PROXY_TARGET or http://localhost:4000, and composes devtools, Tailwind, TanStack Start, and React plugins.",
+      "evidence": [
+        {
+          "resource": "repo://vite.config.ts#L1-L28",
+          "version": "repo-lines-v1:sha256:506ec5504eab58c9bbffc25b37f7d22042e03ba7a31b50f7e084d86eba9db9f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwYWJhNDQ5NzY3NGYyYWQ1ODY4MTE0ZjIzZTI1NzAzZTMyMDJlMTY5NmQ1ZDQ2MTBjY2M1MzY5MGI1N2JmMjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhZjYwNDJkYWE2Y2ZkODFjYmVhNmQ1M2M4NWQ0YmY3ZjM4ZGJkNWQ2YzQ1NWJhMWQzY2E0ODMwZWViNTljNDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a1e2a273236b4e85a902ab1e406c61ac",
+      "statement": "The browser API client uses VITE_API_BASE_URL when present and otherwise uses same-origin /api, which is the path served by the Vite development proxy.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/api.ts#L16-L27",
+          "version": "repo-lines-v1:sha256:4579c48caa89cf84980ffcfe83f4e6c5942652ef250508f2c7ef7b09d070f7b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNWYxNDlhMDYzOTk1NzRkZDUyNzUzMmMyNTgyNjEzYTU0NzZlZWRkNThiZjgzN2MwZWZhZWYzNmFjZjM0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjZThiZDY0ZDVmOWE3MDVjMTZkMDAyZGIwODhlNzliZGU5YWVkMzVjMmRjOWQ5Mzg1NzY4ODkwOGFjMWU0OTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzYWEyNDNkZGE4NzVlMzQxNGU0NDA0YWM3MTE5ZWExODNjZDAxZmM0NzdiMzU5ZDI0MjQ5OWViOGJiNTAxYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1MjM1ZmViNTg2YjgwN2VhZDNmMjVhOWRlMDJmZGVmZmIyOWIxNTc5NTk1ZTYzNDBmNjljZjU0ZjdhNDdkNWIifQ"
+        },
+        {
+          "resource": "repo://vite.config.ts#L9-L24",
+          "version": "repo-lines-v1:sha256:816396995d00eec6e72d6486e86b19f92bd5b3a023bca76ed00caab61d7abfc5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzODQ1NWI0NDY2NjBhZmIwMGNhYTFkNGFmMGViNmQwZGYzYjBjMTU3MzE5NWEyY2E5NGEzZWIwMjRmZTJlNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzNGVhOGE0MDcyNWU2MDU2MTJiMmE0ZmRlZjgwMmE2ZDllNTdmYzU3NjI4Njk4MTRhOTMwMmRlNGUxNGM4OWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiYjFiN2FiYTljOTNjMTZhNTI3YTcyOWFmMzZmMzdjMjc3YTk2Yzg5ZjBiZWMzMzgxZWQ3YTg1ZGViNzQ4ZGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eb06d6fc90a4476f8c57a07a07f359e4",
+      "statement": "TypeScript uses strict no-emit bundler-mode checking, targets ES2022 and DOM APIs, and maps multiple import aliases into src.",
+      "evidence": [
+        {
+          "resource": "repo://tsconfig.json#L1-L40",
+          "version": "repo-lines-v1:sha256:a58f9b14480c5bcf9d07c9b941bfb2bef80d42478eff08ef54b5bea915527c11:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cb3b3fd248ae47bbb301324f205788ab",
+      "statement": "The root stylesheet loads Tailwind CSS, its typography plugin, and the migrated QA webapp stylesheet.",
+      "evidence": [
+        {
+          "resource": "repo://src/styles.css#L1-L11",
+          "version": "repo-lines-v1:sha256:55888666c294e51f13e6f8f337c776acb3eafbd56187fc05a3da1d8ba35fd6aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyMDcwZTBiNDViYjIwMWIyYjgzOGE1MmFhYWE2ZTk2NWY5NjRlMGI1NDJkOTdmMWZlNTE3ZmU1OWM0Yjc1YTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmYTcyZDQ0MmE3OTQyNzAyMzFkZmRiNDFiNTljMzAyNzM3ZWIzMGU4MTk2MGQ4N2MzMzA1ZWY5ZGViNDZkZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fefd51ed7eed42f0b4d13ce322a40a56",
+      "statement": "Build outputs and local environment files are ignored by Git.",
+      "evidence": [
+        {
+          "resource": "repo://.gitignore#L1-L12",
+          "version": "repo-lines-v1:sha256:adbfa298eaaf4d659722f2b5e8dabd44e381e6fcd443fe2cb0616ef6394b1b09:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2ZDMwZTQ0NjIxODlmYjE0ZGQ2MTFiZGI3MDhjNTEwNjMwYzU3NmExZjM1YjkzODNlODlhNDM1MmRhMzZjOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2MWM1NmVjMjlhMmM0NWIyMjE5MWY3MmRmMTYxNzkxYzdkYjQ5NWM0MjNkN2QyOGY1YzI5MTcyODZhODAxNTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2ZWI4NTZjZTE1MjBmYmUzZGE0ZGNlNjhjMjMxZTdkMmFmMWYyNmNkNGQzMTc3MjVjMjAyZTJkMWNkY2RlYTgifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-05T08:35:18.937Z"
+  }
+}
