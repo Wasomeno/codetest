@@ -1142,6 +1142,86 @@ body.is-sidebar-collapsed .sidebar-logout-label { display: none; }
   flex-shrink: 0;
 }
 
+/* Header action buttons — icon + label, hairline shell, coloured ink.
+   No inner tint tile. Hover is a quiet wash. */
+.action-chip {
+  --chip-ink: var(--fg);
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--chip-ink);
+  height: 32px;
+  padding: 0 11px 0 9px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition:
+    background 140ms var(--ease-out),
+    border-color 140ms var(--ease-out),
+    color 140ms var(--ease-out);
+}
+.action-chip:hover:not(:disabled) {
+  background: oklch(97% 0.004 250);
+  border-color: oklch(86% 0.01 250);
+}
+.action-chip:active:not(:disabled) {
+  background: oklch(95% 0.006 250);
+}
+.action-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in oklch, var(--chip-ink) 45%, transparent);
+}
+.action-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.action-chip-icon {
+  display: grid;
+  place-items: center;
+  color: inherit;
+  flex-shrink: 0;
+}
+.action-chip-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.75;
+}
+.action-chip.is-edit {
+  --chip-ink: oklch(42% 0.12 250);
+}
+.action-chip.is-delete {
+  --chip-ink: oklch(46% 0.15 25);
+}
+.action-chip.is-edit:hover:not(:disabled) {
+  background: oklch(97% 0.012 250);
+  border-color: oklch(88% 0.03 250);
+}
+.action-chip.is-delete:hover:not(:disabled) {
+  background: oklch(97% 0.015 25);
+  border-color: oklch(88% 0.04 25);
+}
+.action-chip.is-delete .spec-spin {
+  animation: action-chip-spin 900ms linear infinite;
+}
+@keyframes action-chip-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action-chip {
+    transition: none;
+  }
+  .action-chip.is-delete .spec-spin {
+    animation: none;
+  }
+}
+
 :root {
   --stats-sticky-h: 100px;
 }
@@ -1605,11 +1685,19 @@ body.is-sidebar-collapsed .sidebar-logout-label { display: none; }
    Edit mode
    ========================================================================== */
 
-/* Title row actions swap between view / edit */
+/* Title row actions swap between view / edit.
+   Spec detail mounts .detail-actions-edit via AnimatePresence (so it is
+   always meant to be visible when present). Other pages may still toggle
+   via .is-editing on an ancestor. */
 .detail-actions { display: flex; align-items: center; gap: 8px; }
-.detail-actions-edit { display: none; align-items: center; gap: 8px; }
+.detail-actions-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.detail-actions-view { display: inline-flex; align-items: center; gap: 8px; }
+.is-editing > .detail-actions .detail-actions-view,
 .is-editing .detail-actions-view { display: none; }
-.is-editing .detail-actions-edit { display: inline-flex; }
 
 /* Editable field base — dashed underline hint in view mode, real border on hover */
 .editable {
@@ -5327,63 +5415,294 @@ body.is-sidebar-collapsed:has([data-tooltip]:hover) [data-tooltip]::before {
 }
 
 /* ------------------------------------------------------------------
-   Automation test states
-   Four clearly-different cards for: not generated, generating,
-   generated (success), and error. Each card has a 3px left accent
-   stripe in its state color, a refined icon badge with a subtle
-   gradient, and a single decisive CTA. No duplicated primary buttons
-   across states.
+   Automation generation stage (empty / running)
+   Spacious, process-clear empty state. Pipeline icons map to the real
+   work: read steps → map selectors → emit Playwright.
+   ------------------------------------------------------------------ */
+.at-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  min-height: min(560px, calc(100vh - 220px));
+  padding: 56px 40px 64px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.at-stage[data-state="running"] {
+  background: linear-gradient(180deg, oklch(98.5% 0.012 255) 0%, var(--surface) 42%);
+}
+.at-stage-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 22px;
+  border: 1px solid var(--border);
+  background: oklch(97% 0.006 250);
+  color: var(--fg);
+}
+.at-stage-mark svg {
+  width: 28px;
+  height: 28px;
+}
+.at-stage-mark.is-running {
+  color: var(--accent-text);
+  border-color: oklch(88% 0.05 255);
+  background: oklch(96% 0.03 255);
+  box-shadow: 0 0 0 6px oklch(96% 0.04 255 / 0.55);
+}
+.at-stage-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  color: var(--fg);
+  max-width: 28ch;
+  text-wrap: balance;
+}
+.at-stage-sub {
+  margin: 0 0 36px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 46ch;
+}
+.at-stage-sub strong {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.at-pipeline {
+  list-style: none;
+  margin: 0 0 40px;
+  padding: 0;
+  width: min(720px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.at-pipeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  transition: border-color 160ms var(--ease-out), background 160ms var(--ease-out);
+}
+.at-pipeline-step.is-done {
+  border-color: oklch(88% 0.04 150);
+  background: oklch(98% 0.015 150);
+}
+.at-pipeline-step.is-current {
+  border-color: oklch(86% 0.06 255);
+  background: oklch(98% 0.02 255);
+  box-shadow: 0 0 0 3px oklch(96% 0.04 255 / 0.5);
+}
+.at-pipeline-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+}
+.at-pipeline-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.at-pipeline-step.is-done .at-pipeline-icon {
+  color: var(--success);
+  border-color: oklch(86% 0.06 150);
+  background: oklch(96% 0.03 150);
+}
+.at-pipeline-step.is-current .at-pipeline-icon {
+  color: var(--accent-text);
+  border-color: oklch(86% 0.06 255);
+  background: oklch(96% 0.03 255);
+}
+.at-pipeline-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.at-pipeline-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.at-pipeline-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.at-pipeline-detail {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.at-stage-status {
+  width: min(720px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 28px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-align: left;
+}
+.at-stage-status b {
+  color: var(--fg);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.at-stage-status-bar {
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  background: oklch(94% 0.01 255);
+  overflow: hidden;
+}
+.at-stage-status-fill {
+  display: block;
+  height: 100%;
+  width: 58%;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: at-progress-slide 1.8s var(--ease-in-out) infinite;
+}
+@keyframes at-progress-slide {
+  0% { transform: translateX(-40%); }
+  100% { transform: translateX(120%); }
+}
+
+.at-stage-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.at-stage-btn {
+  height: 40px;
+  padding: 0 18px;
+  gap: 8px;
+  font-size: 14px;
+}
+.at-stage-btn svg {
+  width: 15px;
+  height: 15px;
+}
+.at-stage-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.at-stage-meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.at-stage-meta.is-live {
+  color: var(--accent-text);
+}
+.at-stage-meta .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.at-spin {
+  animation: at-spin 900ms linear infinite;
+}
+@keyframes at-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 720px) {
+  .at-stage {
+    padding: 36px 20px 44px;
+    min-height: 0;
+  }
+  .at-pipeline {
+    grid-template-columns: 1fr;
+  }
+  .at-stage-title {
+    font-size: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .at-spin,
+  .at-stage-status-fill {
+    animation: none;
+  }
+  .at-stage-btn:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Automation test states — success / error result cards
    ------------------------------------------------------------------ */
 .at-card {
   position: relative;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--surface);
-  padding: 20px 22px 18px;
+  padding: 28px 28px 24px;
   overflow: hidden;
 }
 .at-card + .at-card { margin-top: 14px; }
 
-/* Subtle top tint on state cards — restrained, single-layer */
-.at-card-state[data-state="running"] { background: linear-gradient(180deg, oklch(98.5% 0.015 255) 0%, var(--surface) 60%); }
-.at-card-state[data-state="success"] { background: linear-gradient(180deg, oklch(98.5% 0.018 150) 0%, var(--surface) 60%); }
-.at-card-state[data-state="error"]   { background: linear-gradient(180deg, oklch(98.5% 0.018 25)  0%, var(--surface) 60%); }
+.at-card-state[data-state="success"] { background: linear-gradient(180deg, oklch(98.5% 0.018 150) 0%, var(--surface) 48%); }
+.at-card-state[data-state="error"]   { background: linear-gradient(180deg, oklch(98.5% 0.018 25)  0%, var(--surface) 48%); }
 
 .at-card-head {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 .at-card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
   border: 1px solid var(--border);
-  background: linear-gradient(135deg, oklch(97% 0.004 250) 0%, oklch(94% 0.004 250) 100%);
+  background: oklch(97% 0.004 250);
 }
-.at-card-icon svg { width: 18px; height: 18px; display: block; }
+.at-card-icon svg { width: 22px; height: 22px; display: block; }
 
-.at-card-state[data-state="empty"] .at-card-icon {
-  background: linear-gradient(135deg, oklch(97% 0.004 250) 0%, oklch(94% 0.004 250) 100%);
-  color: var(--muted);
-}
-.at-card-state[data-state="running"] .at-card-icon {
-  background: linear-gradient(135deg, oklch(96% 0.06 255) 0%, oklch(93% 0.04 255) 100%);
-  color: var(--accent);
-  border-color: oklch(86% 0.06 255);
-  box-shadow: 0 0 0 4px oklch(96% 0.06 255 / 0.35);
-}
 .at-card-state[data-state="success"] .at-card-icon {
-  background: linear-gradient(135deg, oklch(96% 0.06 150) 0%, oklch(93% 0.04 150) 100%);
+  background: oklch(96% 0.04 150);
   color: var(--success);
   border-color: oklch(86% 0.07 150);
 }
 .at-card-state[data-state="error"] .at-card-icon {
-  background: linear-gradient(135deg, oklch(96% 0.06 25) 0%, oklch(93% 0.04 25) 100%);
+  background: oklch(96% 0.04 25);
   color: var(--danger);
   border-color: oklch(86% 0.08 25);
 }
@@ -5392,16 +5711,17 @@ body.is-sidebar-collapsed:has([data-tooltip]:hover) [data-tooltip]::before {
 .at-card-title {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 16px;
-  letter-spacing: -0.015em;
+  font-size: 20px;
+  letter-spacing: -0.02em;
   line-height: 1.3;
-  margin: 0 0 5px;
+  margin: 0 0 8px;
 }
 .at-card-sub {
-  font-size: 13px;
+  font-size: 14.5px;
   line-height: 1.55;
   color: var(--muted);
   margin: 0;
+  max-width: 62ch;
 }
 .at-card-sub strong { color: var(--fg); font-weight: 500; }
 .at-card-actions {
@@ -6109,67 +6429,347 @@ body.is-sidebar-collapsed:has([data-tooltip]:hover) [data-tooltip]::before {
 .at-step-list-head .at-step-count { color: var(--fg); }
 
 /* ------------------------------------------------------------------
-   Overview tab — "About this scenario" panel and kv-grid.
-   Reuses .kv-* styles when possible; the overview-grid is a 3-col
-   compact variant.
+   Overview tab — split inspector.
+   Two independent scroll panes: scroll the case list or the document
+   without moving the other. Flush with the page — no card wrapper.
    ------------------------------------------------------------------ */
-.overview-body {
-  padding: 14px 18px 18px;
+
+/* Shared tab content inset for Overview / Properties / Automation.
+   Same rhythm as the tab strip (40px sides), tight 20px under the tabs. */
+#pane-test-detail .detail-tabs {
+  margin-bottom: 0;
+}
+#pane-test-detail .page-body {
+  padding: 20px 40px 40px;
+}
+
+/* Lock Overview to the viewport so the split panes own the remaining
+   height under the page head + tabs. */
+#pane-test-detail[data-tab="overview"] {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+#pane-test-detail[data-tab="overview"] .page-head {
+  flex-shrink: 0;
+}
+#pane-test-detail[data-tab="overview"] .detail-tabs {
+  flex-shrink: 0;
+}
+#pane-test-detail[data-tab="overview"] .page-body {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 20px; /* match top inset; sides stay 40px */
+  overflow: hidden;
+}
+#pane-test-detail[data-tab="overview"] #panel-overview {
+  height: 100%;
+}
+
+.overview-inspector {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.overview-index {
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-sizing: border-box;
+}
+.overview-index-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+  border-radius: 12px 12px 0 0;
+}
+.overview-index-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.overview-index-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.overview-index-section {
+  padding: 12px 14px 4px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.overview-index-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 14px;
+  border: 0;
+  border-bottom: 1px solid oklch(94% 0.004 250);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.overview-index-item:hover {
+  background: oklch(97% 0.004 250);
+}
+.overview-index-item.is-active {
+  background: oklch(96% 0.008 250);
+}
+.overview-index-item.is-active .overview-index-name {
+  font-weight: 600;
+}
+.overview-index-item:focus-visible {
+  outline: 2px solid oklch(58% 0.18 255 / 0.35);
+  outline-offset: -2px;
+}
+.overview-index-code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.overview-index-item.is-active .overview-index-code { color: var(--fg); }
+.overview-index-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--fg);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.overview-index-item:not(.is-active) .overview-index-name {
+  color: oklch(32% 0.012 250);
+  font-weight: 400;
+}
+
+.overview-doc {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 28px 32px 40px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-sizing: border-box;
 }
 .overview-desc {
-  margin: 0 0 14px;
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--fg);
-  max-width: 720px;
+  margin: 0 0 32px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 68ch;
 }
 .overview-desc code {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   background: oklch(96% 0.005 250);
   border: 1px solid var(--border);
   border-radius: 4px;
-  padding: 1px 5px;
-}
-.overview-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  overflow: hidden;
-}
-.overview-cell {
-  padding: 12px 14px;
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.overview-cell:nth-child(3n)              { border-right: 0; }
-.overview-cell:nth-last-child(-n+3)       { border-bottom: 0; }
-.overview-key {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-.overview-val {
-  font-size: 13px;
-  font-weight: 500;
+  padding: 1px 6px;
   color: var(--fg);
+}
+
+.overview-case-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.overview-case-identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.overview-case-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.overview-case-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.3;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.overview-case-pills {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
-@media (max-width: 880px) {
-  .overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .overview-cell:nth-child(3n)              { border-right: 1px solid var(--border); }
-  .overview-cell:nth-child(2n)              { border-right: 0; }
-  .overview-cell:nth-last-child(-n+3)       { border-bottom: 1px solid var(--border); }
-  .overview-cell:nth-last-child(-n+2)       { border-bottom: 0; }
+
+.overview-before {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  margin: 0 0 32px;
+}
+.overview-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 4px;
+}
+.overview-before-text {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--fg);
+  max-width: 68ch;
+}
+
+.overview-steps {
+  display: flex;
+  flex-direction: column;
+}
+.overview-steps-head {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.overview-step {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.overview-step:last-child { border-bottom: 0; }
+.overview-step-num {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  padding-top: 2px;
+}
+.overview-step-do {
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--fg);
+}
+.overview-step-data {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.overview-step-expect {
+  font-size: 15px;
+  line-height: 1.55;
+  color: oklch(32% 0.02 250);
+}
+.overview-empty-steps {
+  font-size: 14.5px;
+  color: var(--muted);
+  padding: 8px 0 0;
+}
+
+.overview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 28px;
+}
+.overview-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+@media (max-width: 960px) {
+  #pane-test-detail .page-body {
+    padding: 16px 20px 32px;
+  }
+  #pane-test-detail[data-tab="overview"] {
+    height: auto;
+    overflow: visible;
+  }
+  #pane-test-detail[data-tab="overview"] .page-body {
+    overflow: visible;
+    padding: 16px 20px 32px;
+  }
+  .overview-inspector {
+    grid-template-columns: 1fr;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    gap: 12px;
+  }
+  .overview-index {
+    height: auto;
+    max-height: 240px;
+  }
+  .overview-doc {
+    height: auto;
+    overflow: visible;
+    padding: 20px 20px 32px;
+  }
+  .overview-case-title { font-size: 19px; }
+  .overview-steps-head,
+  .overview-step {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+  .overview-step-expect {
+    grid-column: 2;
+    padding-top: 4px;
+  }
+  .overview-steps-head span:last-child { display: none; }
 }
 
 /* ------------------------------------------------------------------
@@ -6214,17 +6814,29 @@ body.is-sidebar-collapsed:has([data-tooltip]:hover) [data-tooltip]::before {
     margin 240ms var(--ease-out-strong);
 }
 .nav-project-group > .nav-project-group-inner {
+  position: relative;
   min-height: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   margin: 2px 0 4px;
   opacity: 0;
   transform: translateY(-4px);
   transition:
     opacity 200ms var(--ease-out-strong),
     transform 200ms var(--ease-out-strong);
+}
+.nav-project-group > .nav-project-group-inner::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--project-color, var(--border));
+  z-index: 2;
+  pointer-events: none;
 }
 .nav-project.is-open + .nav-project-group {
   grid-template-rows: 1fr;
@@ -6242,13 +6854,12 @@ body.is-sidebar-collapsed:has([data-tooltip]:hover) [data-tooltip]::before {
   padding: 5px 8px 5px 28px;
   margin-left: 12px;
   border-radius: 0 6px 6px 0;
-  border-left: 1px solid var(--border);
   font-size: 12px;
   color: var(--muted);
   line-height: 1.2;
   position: relative;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  transition: background 120ms ease, color 120ms ease;
 }
 .nav-sub:hover {
   background: oklch(96% 0.005 250);
@@ -6258,7 +6869,6 @@ body.is-sidebar-collapsed:has([data-tooltip]:hover) [data-tooltip]::before {
   background: oklch(96% 0.005 250);
   color: var(--fg);
   font-weight: 500;
-  border-left-color: var(--accent);
 }
 .nav-sub .glyph {
   width: 12px;
@@ -8396,33 +9006,48 @@ body.is-sidebar-collapsed .nav-project { justify-content: center; padding: 8px; 
 
 /* ------------------------------------------------------------------
    Commit Diff Modal & Highlights
+
+   A centred dialog, not a full-screen takeover: it floats over the app
+   with rounded corners and a backdrop, but it is wide enough to cover the
+   sidebar too, so a long diff never gets squeezed into the content
+   column. Only the rail and the diff pane scroll.
 ------------------------------------------------------------------ */
 
 .run-modal-overlay:has(.diff-modal),
 .diff-modal-overlay {
-  padding: 0;
-  background: oklch(0% 0 0 / 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  padding: 28px;
+  background: oklch(0% 0 0 / 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   position: fixed;
   inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
+  /* Above the app shell / sidebar (z-index 10) and other overlays (≤100).
+     The modal is portaled to <body> so this stacks against the document. */
+  z-index: 200;
+  display: grid;
+  place-items: center;
 }
 
+/* Fill the overlay's padded area rather than a fixed max width, so the
+   dialog always reaches past the app sidebar instead of floating in the
+   middle of the content column on a wide monitor. The 28px overlay
+   padding is what still reads as "floating card". */
+/* Fixed height so the loading skeleton occupies the same frame as the
+   loaded reader — no jump when the commit detail resolves. */
 .diff-modal {
-  width: 100vw;
-  height: 100vh;
-  max-width: 100vw;
-  max-height: 100vh;
-  border-radius: 0;
-  border: none;
+  width: 100%;
+  height: min(880px, 100%);
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background: var(--bg);
-  box-shadow: none;
+  box-shadow:
+    0 32px 90px -20px oklch(0% 0 0 / 0.34),
+    0 10px 28px -10px oklch(0% 0 0 / 0.16);
 }
 
 .diff-modal .run-modal-close {
@@ -8447,11 +9072,61 @@ body.is-sidebar-collapsed .nav-project { justify-content: center; padding: 8px; 
   border-color: var(--fg);
 }
 
-.diff-modal .run-modal-head {
-  padding: 20px 36px 18px;
+.diff-modal .run-modal-head,
+.diff-modal-head {
+  padding: 22px 56px 18px 28px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+}
+
+/* Three-tier commit header: title → who/when → hash/files */
+.diff-modal-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.022em;
+  line-height: 1.3;
+  color: var(--fg);
+  margin: 0 0 8px;
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+.diff-modal-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.diff-modal-author {
+  color: var(--fg);
+  font-weight: 500;
+}
+.diff-modal-when {
+  color: var(--muted);
+}
+.diff-modal-refs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.diff-modal-dot {
+  color: var(--border);
+  user-select: none;
+}
+.diff-modal-files {
+  color: var(--muted);
 }
 
 .diff-modal-body {
@@ -8670,9 +9345,288 @@ body.is-sidebar-collapsed .nav-project { justify-content: center; padding: 8px; 
   border-top: 1px solid var(--border);
 }
 
+/* ------------------------------------------------------------------
+   Commit diff reader — a file rail plus a single-file pane.
+
+   A commit that touches twenty files is not reviewable as one long
+   column of cards, so the rail indexes the commit and the pane reads
+   one file at a time. The pane is the only scroller.
+   ------------------------------------------------------------------ */
+.diff-reader {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 272px minmax(0, 1fr);
+}
+
+.diff-modal-sha {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: oklch(95% 0.005 250);
+  color: var(--fg);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* --- rail ------------------------------------------------------- */
+.diff-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+}
+.diff-rail-head {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.diff-rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.diff-rail-item {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--fg);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms var(--ease-out);
+}
+.diff-rail-item:hover {
+  background: oklch(97% 0.004 250);
+}
+.diff-rail-item.is-active {
+  background: oklch(95.5% 0.012 255);
+}
+.diff-rail-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: oklch(96% 0.005 250);
+  color: var(--muted);
+}
+.diff-rail-icon svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 1.9;
+}
+.diff-rail-icon.is-added {
+  background: oklch(95% 0.04 150);
+  color: oklch(40% 0.11 150);
+}
+.diff-rail-icon.is-deleted {
+  background: oklch(95.5% 0.04 25);
+  color: oklch(45% 0.15 25);
+}
+.diff-rail-icon.is-renamed {
+  background: oklch(95.5% 0.03 255);
+  color: oklch(45% 0.12 255);
+}
+.diff-rail-icon.is-modified {
+  background: oklch(96% 0.03 75);
+  color: oklch(45% 0.1 75);
+}
+/* Rail shows basename only — full path lives once on the file card. */
+.diff-rail-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.diff-rail-name {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.diff-rail-counts {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- pane ------------------------------------------------------- */
+.diff-pane {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+.diff-pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--surface);
+}
+.diff-pane-body .diff-file-card {
+  margin-bottom: 0;
+}
+
+/* --- file card bits --------------------------------------------- */
+.diff-file-head-toggle {
+  appearance: none;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.diff-file-head-toggle:hover {
+  background: oklch(96.5% 0.006 250);
+}
+.diff-file-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+.diff-file-icon svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 1.9;
+}
+.diff-file-icon.is-added { color: oklch(40% 0.11 150); }
+.diff-file-icon.is-deleted { color: oklch(45% 0.15 25); }
+.diff-file-icon.is-renamed { color: oklch(45% 0.12 255); }
+.diff-file-icon.is-modified { color: oklch(45% 0.1 75); }
+.diff-file-caret {
+  display: inline-grid;
+  place-items: center;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.diff-file-caret svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2;
+}
+.diff-line.is-meta {
+  background: oklch(97% 0.01 300);
+  color: var(--muted);
+  font-style: italic;
+  font-size: 11px;
+}
+.diff-expand-btn {
+  appearance: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: oklch(98% 0.003 250);
+  color: var(--accent-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.diff-expand-btn:hover {
+  background: oklch(96.5% 0.006 250);
+}
+.diff-expand-btn svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 1.9;
+}
+.diff-empty-state {
+  margin: auto;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.diff-empty-state.is-error {
+  color: var(--danger);
+}
+
+/* Skeleton mirrors the loaded reader: same rail row height, same pane
+   chrome, so the frame does not resize when data arrives. */
+.diff-rail-skel {
+  pointer-events: none;
+  cursor: default;
+}
+.diff-rail-skel:hover {
+  background: transparent;
+}
+.diff-rail-skel-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.diff-file-card-skel {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.diff-skel-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px 20px;
+}
+
+@media (max-width: 900px) {
+  .diff-reader {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 132px minmax(0, 1fr);
+  }
+  .diff-rail {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
 @media (max-width: 768px) {
-  .diff-modal .run-modal-head {
-    padding: 14px 16px;
+  .run-modal-overlay:has(.diff-modal),
+  .diff-modal-overlay {
+    padding: 12px;
+  }
+  .diff-modal .run-modal-head,
+  .diff-modal-head {
+    padding: 16px 48px 14px 16px;
+  }
+  .diff-modal-title {
+    font-size: 17px;
   }
   .diff-modal-body {
     padding: 14px 16px 32px;

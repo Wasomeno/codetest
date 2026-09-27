@@ -114,6 +114,8 @@ export interface RecordingStep {
   description: string;
   selector: string;
   value?: string;
+  /** Target URL for navigate steps. */
+  url?: string;
   elementHints?: ElementHints;
   selectorCandidates?: string[];
   xpath?: string;

@@ -137,8 +137,8 @@ export function TestsListPage({
 
       let status: TestStatus = "draft";
       if (s.automationStats) {
-        if (s.automationStats.failed > 0) status = "failed";
-        else if (s.automationStats.passed > 0) status = "passed";
+        if (s.automationStats.failCount > 0) status = "failed";
+        else if (s.automationStats.passCount > 0) status = "passed";
       }
 
       return {
@@ -279,18 +279,6 @@ export function TestsListPage({
           </div>
 
           <div className="spacer" />
-          <button
-            className="btn btn-secondary"
-            onClick={() => alert("Export CSV: not implemented in UI migration")}
-          >
-            Export CSV
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => alert("New test: not implemented in UI migration")}
-          >
-            New test
-          </button>
         </div>
 
         <section className="panel" data-od-id="tests-panel">

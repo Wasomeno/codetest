@@ -1,105 +1,49 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import {
+  CircleAlert,
+  CircleCheck,
+  Code2,
+  FlaskConical,
+  ListOrdered,
+  LoaderCircle,
+  MousePointerClick,
+  Play,
+} from "lucide-react";
 import {
   fmtDate,
   fmtRel,
   RECENT_TEST_RUNS,
-  STEPS_TEMPLATE,
 } from "~/lib/mock-data-new";
-import type { Step } from "~/lib/mock-data-new";
 import { useTestScenario } from "~/hooks/api/useTestScenarios";
 import { useProjects } from "~/hooks/api/useProjects";
 import { colorForName } from "~/lib/map-app-project";
 import { testScenarioApi } from "~/api/test-scenario";
-import type { TestScenario } from "~/types/test-scenario";
+import type { TestCase, TestScenario, TestSection } from "~/types/test-scenario";
 
-// Inline icon defs (matches symbols from automation-test.html)
-const StepIcon = ({ action }: { action: Step["action"] }) => {
-  const props = {
-    viewBox: "0 0 16 16",
-    width: 14,
-    height: 14,
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.5,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-  };
-  switch (action) {
-    case "navigate":
-      return (
-        <svg {...props}>
-          <circle cx="8" cy="8" r="6" />
-          <line x1="2" y1="8" x2="14" y2="8" />
-          <ellipse cx="8" cy="8" rx="3" ry="6" />
-        </svg>
-      );
-    case "type":
-      return (
-        <svg {...props}>
-          <rect x="2.5" y="3.5" width="11" height="9" rx="1.2" />
-          <path d="M5 6h6" />
-          <path d="M5 9h3" />
-          <path d="M11.5 7.5v3.5M10 9.5h3" />
-        </svg>
-      );
-    case "click":
-      return (
-        <svg {...props}>
-          <path d="M5.5 3v9l2.6-2.5L10 13l1.4-0.8L9 8.7 12.2 8.5z" />
-        </svg>
-      );
-    case "select":
-      return (
-        <svg {...props}>
-          <circle cx="8" cy="8" r="6" />
-          <circle cx="8" cy="8" r="2.6" fill="currentColor" stroke="none" />
-        </svg>
-      );
-    case "assert":
-      return (
-        <svg {...props}>
-          <path d="M3 8.3l3.4 3.4L13 5" />
-        </svg>
-      );
-    case "webhook":
-      return (
-        <svg {...props}>
-          <path d="M9.5 2L4 9h3l-1 5 5.5-7H8.5z" />
-        </svg>
-      );
-    case "api":
-      return (
-        <svg {...props}>
-          <path d="M6 3c-2 0-2 2-2 3.2c0 1-1 1.8-2 1.8c1 0 2 0.8 2 1.8c0 1.2 0 3.2 2 3.2" />
-          <path d="M10 3c2 0 2 2 2 3.2c0 1 1 1.8 2 1.8c-1 0-2 0.8-2 1.8c0 1.2 0 3.2-2 3.2" />
-        </svg>
-      );
-    default:
-      return null;
-  }
-};
+const PlayIcon = () => <Play size={12} strokeWidth={1.75} aria-hidden />;
 
-const ActionIcon = StepIcon;
-
-const PlayIcon = () => (
-  <svg viewBox="0 0 16 16" width={12} height={12} fill="currentColor" aria-hidden="true">
-    <path d="M4 2.5v11l8-5.5z" />
-  </svg>
-);
-
-const SparkleIcon = () => (
-  <svg viewBox="0 0 16 16" width={12} height={12} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M8 1.5 C8 5, 11 8, 14.5 8 C11 8, 8 11, 8 14.5 C8 11, 5 8, 1.5 8 C5 8, 8 5, 8 1.5 Z" />
-  </svg>
-);
-
-const CheckIcon = ({ size = 12 }: { size?: number }) => (
-  <svg viewBox="0 0 16 16" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M3 8.5l3 3 7-8" />
-  </svg>
-);
+const GENERATION_PIPELINE = [
+  {
+    id: "read",
+    label: "Read steps",
+    detail: "Parse each scenario step",
+    Icon: ListOrdered,
+  },
+  {
+    id: "map",
+    label: "Map selectors",
+    detail: "Prefer test IDs, then role/text",
+    Icon: MousePointerClick,
+  },
+  {
+    id: "emit",
+    label: "Emit Playwright",
+    detail: "Fixtures, assertions, ready to run",
+    Icon: Code2,
+  },
+] as const;
 
 function StatusMenu({
   value,
@@ -317,6 +261,27 @@ function TypePill({ type }: { type?: string }) {
   );
 }
 
+type IndexedCase = {
+  key: string;
+  section: TestSection;
+  testCase: TestCase;
+};
+
+function flattenCases(sections: TestSection[] | undefined): IndexedCase[] {
+  if (!sections?.length) return [];
+  const out: IndexedCase[] = [];
+  for (const section of sections) {
+    for (const testCase of section.testCases ?? []) {
+      out.push({
+        key: testCase.id || `${section.id}-${testCase.order}`,
+        section,
+        testCase,
+      });
+    }
+  }
+  return out;
+}
+
 function AutomationCategoryPill({ category }: { category?: string | null }) {
   if (!category) return null;
   const cat = category.toUpperCase();
@@ -441,31 +406,48 @@ function ATStateEmpty({
   isGenerating: boolean;
 }) {
   return (
-    <div className="at-card at-card-state" data-state="empty" data-od-id="at-state-empty">
-      <div className="at-card-head">
-        <div className="at-card-icon">
-          <SparkleIcon />
-        </div>
-        <div className="at-card-body">
-          <h3 className="at-card-title">No automation test yet</h3>
-          <p className="at-card-sub">
-            Generate runnable Playwright scripts from the{" "}
-            <strong>{test.steps} scenario steps</strong>. The model maps each
-            step to a selector strategy (Test ID preferred, role, or text) and bakes in test assertions.
-          </p>
-        </div>
+    <div className="at-stage" data-state="empty" data-od-id="at-state-empty">
+      <div className="at-stage-mark" aria-hidden>
+        <FlaskConical strokeWidth={1.6} />
       </div>
-      <div className="at-card-actions">
+      <h3 className="at-stage-title">Generate automation from this scenario</h3>
+      <p className="at-stage-sub">
+        Turn <strong>{test.steps} scenario steps</strong> into a runnable
+        Playwright suite — selectors, fixtures, and assertions included.
+      </p>
+
+      <ol className="at-pipeline" aria-label="Generation pipeline">
+        {GENERATION_PIPELINE.map(({ id, label, detail, Icon }, index) => (
+          <li key={id} className="at-pipeline-step">
+            <span className="at-pipeline-icon">
+              <Icon strokeWidth={1.6} aria-hidden />
+            </span>
+            <span className="at-pipeline-copy">
+              <span className="at-pipeline-label">
+                <span className="at-pipeline-num">{index + 1}</span>
+                {label}
+              </span>
+              <span className="at-pipeline-detail">{detail}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+
+      <div className="at-stage-cta">
         <button
-          className="btn btn-primary"
+          className="btn btn-primary at-stage-btn"
           type="button"
           onClick={onGenerate}
           disabled={isGenerating}
         >
-          <SparkleIcon />
-          {isGenerating ? "Enqueuing generation…" : "Generate automation test"}
+          {isGenerating ? (
+            <LoaderCircle className="at-spin" strokeWidth={1.75} aria-hidden />
+          ) : (
+            <Play strokeWidth={1.75} aria-hidden />
+          )}
+          {isGenerating ? "Enqueuing generation…" : "Generate Playwright test"}
         </button>
-        <span className="at-card-meta">est. 30–45s · Playwright · Test ID preferred</span>
+        <span className="at-stage-meta">est. 30–45s · Test ID preferred</span>
       </div>
     </div>
   );
@@ -486,106 +468,63 @@ function ATStateRunning({
   const progressText = jobStatus?.caseCount
     ? `Processing ${jobStatus.caseCount} test cases`
     : `Mapping ${test.steps} scenario steps`;
+  // Soft progress through the three pipeline stages while the job runs.
+  const activeStep = 1;
 
   return (
-    <div className="at-card at-card-state" data-state="running" data-od-id="at-state-running">
-      <div className="at-card-head">
-        <div className="at-card-icon">
-          <svg
-            viewBox="0 0 16 16"
-            width={18}
-            height={18}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M8 2v4M8 10v4M2 8h4M10 8h4M3.8 3.8l2.8 2.8M9.4 9.4l2.8 2.8M3.8 12.2l2.8-2.8M9.4 6.6l2.8-2.8" />
-          </svg>
-        </div>
-        <div className="at-card-body">
-          <h3 className="at-card-title">Generating automation test</h3>
-          <p className="at-card-sub">
-            Mapping the <strong>{test.steps} scenario steps</strong> into a
-            Playwright script — resolving selectors, binding fixtures,
-            scaffolding assertions.
-          </p>
-        </div>
+    <div className="at-stage" data-state="running" data-od-id="at-state-running">
+      <div className="at-stage-mark is-running" aria-hidden>
+        <LoaderCircle className="at-spin" strokeWidth={1.6} />
       </div>
+      <h3 className="at-stage-title">Generating Playwright test</h3>
+      <p className="at-stage-sub">
+        {progressText} — resolving selectors, binding fixtures, scaffolding
+        assertions.
+      </p>
 
-      <div className="at-workflow-meta">
+      <div className="at-stage-status">
         <span>
-          <b>Status:</b> {statusText} · {progressText}
+          <b>{statusText}</b>
+          {jobId ? ` · ${jobId.slice(0, 8)}` : ""}
         </span>
-        <span className="at-workflow-pct" style={{ fontFamily: "var(--font-mono)" }}>
-          {jobId ? jobId.slice(0, 8) : "running"}
+        <span className="at-stage-status-bar" aria-hidden>
+          <span className="at-stage-status-fill" />
         </span>
-      </div>
-      <div className="at-workflow" aria-label="Generation workflow">
-        <div className="at-progress" aria-hidden="true">
-          <div
-            className="at-progress-fill"
-            style={{ width: "70%" }}
-          />
-        </div>
-        <div className="at-workflow-step is-done">
-          <span className="step-dot">
-            <CheckIcon size={11} />
-          </span>
-          <span className="step-label">Understand</span>
-        </div>
-        <div className="at-workflow-connector" />
-        <div className="at-workflow-step is-done">
-          <span className="step-dot">
-            <CheckIcon size={11} />
-          </span>
-          <span className="step-label">Map selectors</span>
-        </div>
-        <div className="at-workflow-connector" />
-        <div className="at-workflow-step is-current">
-          <span className="step-dot">3</span>
-          <span className="step-label">Bind fixtures</span>
-        </div>
-        <div className="at-workflow-connector" />
-        <div className="at-workflow-step">
-          <span className="step-dot">4</span>
-          <span className="step-label">Generate code</span>
-        </div>
-        <div className="at-workflow-connector" />
-        <div className="at-workflow-step">
-          <span className="step-dot">5</span>
-          <span className="step-label">Validate</span>
-        </div>
       </div>
 
-      <div className="at-log" aria-hidden="true">
-        <div className="at-log-line">
-          <span className="at-log-ts">00:00</span>
-          <span>analyzing scenario steps…</span>
-        </div>
-        <div className="at-log-line">
-          <span className="at-log-ts">00:04</span>
-          <span>resolving selectors (testid preferred)</span>
-        </div>
-        <div className="at-log-line">
-          <span className="at-log-ts">00:09</span>
-          <span>binding fixtures: auth-context, testData</span>
-        </div>
-        <div className="at-log-line">
-          <span className="at-log-ts">00:18</span>
-          <span>generating Playwright test specs…</span>
-        </div>
-      </div>
-      <div className="at-card-actions">
+      <ol className="at-pipeline" aria-label="Generation progress">
+        {GENERATION_PIPELINE.map(({ id, label, detail, Icon }, index) => {
+          const state =
+            index < activeStep ? "done" : index === activeStep ? "current" : "pending";
+          return (
+            <li key={id} className={`at-pipeline-step is-${state}`}>
+              <span className="at-pipeline-icon">
+                {state === "done" ? (
+                  <CircleCheck strokeWidth={1.75} aria-hidden />
+                ) : state === "current" ? (
+                  <LoaderCircle className="at-spin" strokeWidth={1.75} aria-hidden />
+                ) : (
+                  <Icon strokeWidth={1.6} aria-hidden />
+                )}
+              </span>
+              <span className="at-pipeline-copy">
+                <span className="at-pipeline-label">{label}</span>
+                <span className="at-pipeline-detail">{detail}</span>
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="at-stage-cta">
         {onDismiss && (
           <button className="btn btn-ghost" type="button" onClick={onDismiss}>
             Dismiss
           </button>
         )}
-        <span className="at-card-meta" style={{ color: "var(--accent)" }}>
-          <span className="dot" />running{jobId ? ` · ${jobId.slice(0, 8)}` : ""}
+        <span className="at-stage-meta is-live">
+          <span className="dot" />
+          running
         </span>
       </div>
     </div>
@@ -622,7 +561,7 @@ function ATStateSuccess({
     <div className="at-card at-card-state" data-state="success" data-od-id="at-state-success">
       <div className="at-card-head">
         <div className="at-card-icon">
-          <CheckIcon size={18} />
+          <CircleCheck strokeWidth={1.75} aria-hidden />
         </div>
         <div className="at-card-body">
           <h3 className="at-card-title">Automation test generated</h3>
@@ -835,7 +774,11 @@ function ATStateSuccess({
           onClick={onRegenerate}
           disabled={isRegenerating}
         >
-          <SparkleIcon />
+          {isRegenerating ? (
+            <LoaderCircle className="at-spin" strokeWidth={1.75} aria-hidden />
+          ) : (
+            <FlaskConical strokeWidth={1.75} aria-hidden />
+          )}
           {isRegenerating ? "Regenerating…" : "Regenerate"}
         </button>
         <span className="at-card-meta" style={{ color: "var(--success)" }}>
@@ -892,7 +835,6 @@ function ATStateSuccess({
 }
 
 function ATStateError({
-  test,
   errorMessage,
   onRetry,
   isRetrying,
@@ -908,11 +850,7 @@ function ATStateError({
     <div className="at-card at-card-state" data-state="error" data-od-id="at-state-error">
       <div className="at-card-head">
         <div className="at-card-icon">
-          <svg viewBox="0 0 16 16" width={18} height={18} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M8 2.5l6.5 11.5h-13z" />
-            <path d="M8 7v3.5" />
-            <circle cx="8" cy="12.5" r="0.6" fill="currentColor" />
-          </svg>
+          <CircleAlert strokeWidth={1.75} aria-hidden />
         </div>
         <div className="at-card-body">
           <h3 className="at-card-title">
@@ -993,11 +931,16 @@ export function TestDetailPage({ testId }: { testId: string }) {
 
   const [status, setStatus] = useState("passing");
   const [tab, setTab] = useState<TabId>("overview");
-
+  const reduceMotion = useReducedMotion();
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<any>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSelectedCaseId(null);
+  }, [testId]);
 
   // Sliding underline indicator. We measure each tab button and drive
   // the indicator's transform + width from React so the underline
@@ -1120,6 +1063,12 @@ export function TestDetailPage({ testId }: { testId: string }) {
       scenario.sections?.flatMap((s) => s.testCases?.flatMap((tc) => tc.tags || []) || []) || [],
     ),
   );
+  const indexedCases = flattenCases(scenario.sections);
+  const showSectionLabels =
+    (scenario.sections?.length ?? 0) > 1 &&
+    scenario.sections!.some((sec) => sec.title && sec.title !== scenario.title);
+  const activeCase =
+    indexedCases.find((item) => item.key === selectedCaseId) ?? indexedCases[0];
   const testObj = {
     name: scenarioName,
     steps: Math.max(totalSteps, 1),
@@ -1128,7 +1077,12 @@ export function TestDetailPage({ testId }: { testId: string }) {
   };
 
   return (
-    <div className="app-pane" id="pane-test-detail" data-od-id="pane-test-detail">
+    <div
+      className="app-pane"
+      id="pane-test-detail"
+      data-od-id="pane-test-detail"
+      data-tab={tab}
+    >
       <div className="page-head">
         <div className="page-head-text" style={{ width: "100%" }}>
           <nav className="detail-breadcrumb" aria-label="Breadcrumb">
@@ -1256,243 +1210,108 @@ export function TestDetailPage({ testId }: { testId: string }) {
             aria-labelledby="tab-overview"
             data-od-id="panel-overview"
           >
-            {scenario.description && (
-              <div className="overview-body" style={{ padding: "16px 20px" }}>
-                <p className="overview-desc">{scenario.description}</p>
-              </div>
-            )}
-
-            {scenario.sections && scenario.sections.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {scenario.sections.map((sec, secIndex) => (
-                  <div key={sec.id || secIndex} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                    {scenario.sections!.length > 1 && sec.title && sec.title !== scenario.title && (
-                      <div
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 600,
-                          color: "var(--muted)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.06em",
-                          marginTop: secIndex > 0 ? 8 : 0,
-                        }}
-                      >
-                        {sec.title} · {sec.testCases?.length || 0} cases
-                      </div>
-                    )}
-                    {sec.testCases?.map((tc) => (
-                      <div
-                        key={tc.id}
-                        style={{
-                          border: "1px solid var(--border)",
-                          borderRadius: 8,
-                          background: "var(--surface)",
-                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.02)",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            padding: "12px 16px",
-                            borderBottom: "1px solid var(--border)",
-                            background: "oklch(99.5% 0.001 250)",
-                            flexWrap: "wrap",
-                            gap: 8,
-                          }}
-                        >
-                          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
-                            {tc.code && (
-                              <span
-                                style={{
-                                  fontFamily: "var(--font-mono)",
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  padding: "2px 7px",
-                                  borderRadius: 4,
-                                  background: "oklch(96% 0.005 250)",
-                                  border: "1px solid var(--border)",
-                                  color: "var(--fg)",
-                                  flexShrink: 0,
-                                }}
-                              >
-                                {tc.code}
-                              </span>
-                            )}
-                            <h4
-                              style={{
-                                margin: 0,
-                                fontSize: 14,
-                                fontWeight: 600,
-                                color: "var(--fg)",
-                                letterSpacing: "-0.01em",
-                                lineHeight: 1.4,
-                              }}
-                            >
-                              {tc.title}
-                            </h4>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                            <PriorityPill priority={tc.priority} />
-                            <TypePill type={tc.type} />
-                            <AutomationCategoryPill category={tc.automationType || tc.automationTest?.category} />
-                          </div>
-                        </div>
-
-                        <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-                          {tc.preCondition && (
-                            <div
-                              style={{
-                                background: "oklch(98.5% 0.002 250)",
-                                border: "1px solid var(--border)",
-                                borderLeft: "3px solid var(--accent)",
-                                borderRadius: 6,
-                                padding: "10px 14px",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  fontSize: 10,
-                                  fontWeight: 700,
-                                  letterSpacing: "0.08em",
-                                  textTransform: "uppercase",
-                                  color: "var(--muted)",
-                                  marginBottom: 4,
-                                }}
-                              >
-                                PRECONDITION
-                              </div>
-                              <div style={{ fontSize: 12.5, color: "var(--fg)", lineHeight: 1.5 }}>
-                                {tc.preCondition.replace(/^-\s*/, "")}
-                              </div>
-                            </div>
-                          )}
-
-                          {tc.steps && tc.steps.length > 0 && (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              <div
-                                style={{
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  letterSpacing: "0.04em",
-                                  textTransform: "uppercase",
-                                  color: "var(--muted)",
-                                  marginBottom: 2,
-                                }}
-                              >
-                                Steps ({tc.steps.length})
-                              </div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                {tc.steps.map((st, sIdx) => (
-                                  <div
-                                    key={st.id || sIdx}
-                                    style={{
-                                      display: "grid",
-                                      gridTemplateColumns: "36px 1fr 1fr",
-                                      alignItems: "flex-start",
-                                      gap: 12,
-                                      padding: "10px 12px",
-                                      borderRadius: 6,
-                                      background: "oklch(99% 0.002 250)",
-                                      border: "1px solid oklch(94% 0.005 250)",
-                                      fontSize: 12.5,
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        fontFamily: "var(--font-mono)",
-                                        fontSize: 11,
-                                        fontWeight: 600,
-                                        color: "var(--muted)",
-                                        background: "var(--surface)",
-                                        border: "1px solid var(--border)",
-                                        borderRadius: 4,
-                                        height: 24,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                      }}
-                                    >
-                                      {String(st.order || sIdx + 1).padStart(2, "0")}
-                                    </div>
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                      <div style={{ color: "var(--fg)", fontWeight: 500, lineHeight: 1.4 }}>
-                                        {st.action}
-                                      </div>
-                                      {st.data && (
-                                        <div>
-                                          <span
-                                            style={{
-                                              fontFamily: "var(--font-mono)",
-                                              fontSize: 11,
-                                              background: "oklch(96% 0.005 250)",
-                                              padding: "2px 6px",
-                                              borderRadius: 4,
-                                              border: "1px solid var(--border)",
-                                              color: "var(--muted)",
-                                            }}
-                                          >
-                                            Data: {st.data}
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        alignItems: "flex-start",
-                                        gap: 6,
-                                        color: "oklch(40% 0.05 250)",
-                                        lineHeight: 1.4,
-                                        padding: "4px 8px",
-                                        borderRadius: 4,
-                                        background: "oklch(98% 0.005 150 / 0.4)",
-                                        border: "1px solid oklch(92% 0.02 150 / 0.5)",
-                                      }}
-                                    >
-                                      <span style={{ color: "var(--success)", flexShrink: 0, marginTop: 1 }}>
-                                        <CheckIcon size={12} />
-                                      </span>
-                                      <span style={{ fontSize: 12 }}>{st.expected}</span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {tc.tags && tc.tags.length > 0 && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", paddingTop: 4 }}>
-                              {tc.tags.map((tag) => (
-                                <span
-                                  key={tag}
-                                  style={{
-                                    fontSize: 11,
-                                    fontFamily: "var(--font-mono)",
-                                    color: "var(--muted)",
-                                    background: "oklch(97% 0.003 250)",
-                                    border: "1px solid var(--border)",
-                                    padding: "1px 7px",
-                                    borderRadius: 999,
-                                  }}
-                                >
-                                  #{tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <section className="panel" style={{ marginTop: 20, padding: 32, textAlign: "center", color: "var(--muted)" }}>
+            {!activeCase ? (
+              <section className="panel" style={{ padding: 32, textAlign: "center", color: "var(--muted)" }}>
                 <p style={{ margin: 0, fontSize: 14 }}>No test sections or steps parsed in this scenario.</p>
               </section>
+            ) : (
+              <div className="overview-inspector" data-od-id="overview-inspector">
+                <nav className="overview-index" aria-label="Test cases">
+                  <div className="overview-index-head">
+                    <span className="overview-index-title">Cases</span>
+                    <span className="overview-index-meta">
+                      {totalTestCases} · {totalSteps} steps
+                    </span>
+                  </div>
+                  {indexedCases.map((item, index) => {
+                    const prev = indexedCases[index - 1];
+                    const showSection =
+                      showSectionLabels &&
+                      item.section.title &&
+                      item.section.title !== scenario.title &&
+                      item.section.id !== prev?.section.id;
+                    const isActive = item.key === activeCase.key;
+                    return (
+                      <div key={item.key}>
+                        {showSection && (
+                          <div className="overview-index-section">{item.section.title}</div>
+                        )}
+                        <button
+                          type="button"
+                          className={`overview-index-item${isActive ? " is-active" : ""}`}
+                          aria-current={isActive ? "true" : undefined}
+                          onClick={() => setSelectedCaseId(item.key)}
+                        >
+                          <span className="overview-index-code">
+                            {item.testCase.code || String(index + 1).padStart(2, "0")}
+                          </span>
+                          <span className="overview-index-name">{item.testCase.title}</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </nav>
+
+                <article className="overview-doc">
+                  {scenario.description && (
+                    <p className="overview-desc">{scenario.description}</p>
+                  )}
+
+                  <header className="overview-case-head">
+                    <div className="overview-case-identity">
+                      {activeCase.testCase.code && (
+                        <span className="overview-case-code">{activeCase.testCase.code}</span>
+                      )}
+                      <h2 className="overview-case-title">{activeCase.testCase.title}</h2>
+                    </div>
+                    <div className="overview-case-pills">
+                      <PriorityPill priority={activeCase.testCase.priority} />
+                      <TypePill type={activeCase.testCase.type} />
+                      <AutomationCategoryPill
+                        category={
+                          activeCase.testCase.automationType ||
+                          activeCase.testCase.automationTest?.category
+                        }
+                      />
+                    </div>
+                  </header>
+
+                  {activeCase.testCase.preCondition && (
+                    <div className="overview-before">
+                      <span className="overview-label">Before</span>
+                      <p className="overview-before-text">
+                        {activeCase.testCase.preCondition.replace(/^-\s*/, "")}
+                      </p>
+                    </div>
+                  )}
+
+                  {activeCase.testCase.steps && activeCase.testCase.steps.length > 0 ? (
+                    <div className="overview-steps">
+                      <div className="overview-steps-head">
+                        <span />
+                        <span>Do</span>
+                        <span>Expect</span>
+                      </div>
+                      {activeCase.testCase.steps.map((st, sIdx) => (
+                        <div key={st.id || sIdx} className="overview-step">
+                          <span className="overview-step-num">
+                            {String(st.order || sIdx + 1).padStart(2, "0")}
+                          </span>
+                          <div className="overview-step-do">
+                            {st.action}
+                            {st.data ? (
+                              <span className="overview-step-data">{st.data}</span>
+                            ) : null}
+                          </div>
+                          <div className="overview-step-expect">{st.expected}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="overview-empty-steps">No steps in this case.</p>
+                  )}
+                </article>
+              </div>
             )}
           </div>
         )}
@@ -1618,99 +1437,58 @@ export function TestDetailPage({ testId }: { testId: string }) {
             aria-labelledby="tab-automation"
             data-od-id="panel-automation"
           >
-            {atState === "empty" && (
-              <ATStateEmpty
-                test={testObj}
-                onGenerate={handleGenerateAutomations}
-                isGenerating={isGenerating}
-              />
-            )}
-            {atState === "running" && (
-              <ATStateRunning
-                test={testObj}
-                jobId={activeJobId}
-                jobStatus={jobStatus}
-                onDismiss={() => {
-                  setActiveJobId(null);
-                  setIsGenerating(false);
-                }}
-              />
-            )}
-            {atState === "success" && (
-              <ATStateSuccess
-                scenario={scenario}
-                test={testObj}
-                onRegenerate={handleGenerateAutomations}
-                isRegenerating={isGenerating}
-                recentRuns={RECENT_TEST_RUNS}
-              />
-            )}
-            {atState === "error" && (
-              <ATStateError
-                test={testObj}
-                errorMessage={
-                  generationError ||
-                  scenario.error ||
-                  scenario.sections?.flatMap((s) => s.testCases || []).find((tc) => tc.automationTest?.errorMessage)?.automationTest?.errorMessage
-                }
-                onRetry={handleGenerateAutomations}
-                isRetrying={isGenerating}
-              />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={atState}
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)", transform: "translateY(6px)" }}
+                animate={reduceMotion ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)", transform: "translateY(0px)" }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)", transform: "translateY(-4px)" }}
+                transition={{ duration: reduceMotion ? 0.01 : 0.22, ease: [0.23, 1, 0.32, 1] }}
+              >
+                {atState === "empty" && (
+                  <ATStateEmpty
+                    test={testObj}
+                    onGenerate={handleGenerateAutomations}
+                    isGenerating={isGenerating}
+                  />
+                )}
+                {atState === "running" && (
+                  <ATStateRunning
+                    test={testObj}
+                    jobId={activeJobId}
+                    jobStatus={jobStatus}
+                    onDismiss={() => {
+                      setActiveJobId(null);
+                      setIsGenerating(false);
+                    }}
+                  />
+                )}
+                {atState === "success" && (
+                  <ATStateSuccess
+                    scenario={scenario}
+                    test={testObj}
+                    onRegenerate={handleGenerateAutomations}
+                    isRegenerating={isGenerating}
+                    recentRuns={RECENT_TEST_RUNS}
+                  />
+                )}
+                {atState === "error" && (
+                  <ATStateError
+                    test={testObj}
+                    errorMessage={
+                      generationError ||
+                      scenario.error ||
+                      scenario.sections?.flatMap((s) => s.testCases || []).find((tc) => tc.automationTest?.errorMessage)?.automationTest?.errorMessage
+                    }
+                    onRetry={handleGenerateAutomations}
+                    isRetrying={isGenerating}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         )}
 
-        {/* Recent runs panel — kept for the migration preview, on the
-            Overview tab. The design moves this into the Automation test
-            tab (success state) in the new version. */}
-        {tab === "overview" && (
-          <section className="panel" style={{ marginTop: 20 }} data-od-id="detail-runs">
-            <div className="panel-head">
-              <span className="panel-title">Recent runs</span>
-              <span className="panel-meta">last 24h</span>
-            </div>
-            {RECENT_TEST_RUNS.slice(0, 4).map((run) => {
-              const pillClass =
-                run.status === "passed"
-                  ? "pill pill-success"
-                  : (run.status as string) === "failed"
-                    ? "pill pill-danger"
-                    : "pill pill-warn";
-              const label =
-                run.status === "passed"
-                  ? "passed"
-                  : (run.status as string) === "failed"
-                    ? "failed"
-                    : "flaky";
-              return (
-                <Link
-                  key={run.id}
-                  className="run-row"
-                  to="/runs/$id" params={{ id: run.id }}
-                  style={{ cursor: "pointer", textDecoration: "none" }}
-                >
-                  <span className="run-id">
-                    <span className="commit-dot" />#{run.id} · {run.sha}
-                  </span>
-                  <span className="run-trigger">{run.trigger}</span>
-                  <span className="run-when">{fmtRel(run.when)}</span>
-                  <span style={{ textAlign: "right" }}>
-                    <span className={pillClass} style={{ height: 20 }}>
-                      <span className="swatch" />
-                      {label}
-                    </span>{" "}
-                    <span
-                      className="run-duration"
-                      style={{ marginLeft: 8 }}
-                    >
-                      {run.duration}
-                    </span>
-                  </span>
-                </Link>
-              );
-            })}
-          </section>
-        )}
       </div>
     </div>
   );

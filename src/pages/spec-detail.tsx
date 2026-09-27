@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { SquareArrowOutUpRight } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { LoaderCircle, Pencil, SquareArrowOutUpRight, Trash2 } from "lucide-react";
 import { getAppProject } from "~/api/project";
 import {
   deleteSpecsFile,
@@ -18,6 +20,8 @@ import {
   SpecDetailSkeleton,
   SpecHistorySkeleton,
 } from "~/components/Skeleton";
+import { SpecDocumentEditor } from "~/components/spec-document-editor/SpecDocumentEditor";
+import { CommitDiffViewer } from "~/components/commit-diff-view";
 import "~/components/spec-document-editor/spec-document-editor.css";
 
 interface CodeBlock {
@@ -34,10 +38,15 @@ interface ParagraphBlock {
   type: "paragraph";
   text: string;
 }
+interface ListItem {
+  text: string;
+  /** null when the item is a plain bullet, not a `- [ ]` task item. */
+  checked: boolean | null;
+}
 interface ListBlock {
   type: "list";
   ordered: boolean;
-  items: string[];
+  items: ListItem[];
 }
 interface BlockquoteBlock {
   type: "blockquote";
@@ -74,24 +83,13 @@ function renderInline(text: string): React.ReactNode[] {
     const token = match[0];
     if (token.startsWith("`") && token.endsWith("`")) {
       parts.push(
-        <code
-          key={match.index}
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.88em",
-            padding: "2px 5px",
-            borderRadius: 4,
-            background: "oklch(96% 0.005 250)",
-            border: "1px solid var(--border)",
-            color: "var(--fg)",
-          }}
-        >
+        <code key={match.index}>
           {token.slice(1, -1)}
         </code>,
       );
     } else if (token.startsWith("**") && token.endsWith("**")) {
       parts.push(
-        <strong key={match.index} style={{ fontWeight: 600, color: "var(--fg)" }}>
+        <strong key={match.index}>
           {token.slice(2, -2)}
         </strong>,
       );
@@ -106,7 +104,6 @@ function renderInline(text: string): React.ReactNode[] {
             href={linkMatch[2]}
             target="_blank"
             rel="noreferrer"
-            style={{ color: "var(--accent)", textDecoration: "underline" }}
           >
             {linkMatch[1]}
           </a>,
@@ -121,6 +118,19 @@ function renderInline(text: string): React.ReactNode[] {
     parts.push(text.slice(lastIndex));
   }
   return parts;
+}
+
+// GFM task item: "- [ ] todo" / "- [x] done". The spec editor writes these
+// for acceptance criteria, so the reader has to recognise them too.
+const TASK_ITEM_MARKER = /^\[([ xX])\]\s+/;
+
+function parseListItem(raw: string): ListItem {
+  const match = raw.match(TASK_ITEM_MARKER);
+  if (!match) return { text: raw, checked: null };
+  return {
+    text: raw.slice(match[0].length),
+    checked: match[1].toLowerCase() === "x",
+  };
 }
 
 function parseMarkdown(md: string): MarkdownBlock[] {
@@ -192,9 +202,9 @@ function parseMarkdown(md: string): MarkdownBlock[] {
     }
 
     if (/^[-*+]\s+/.test(line.trim())) {
-      const items: string[] = [];
+      const items: ListItem[] = [];
       while (i < lines.length && /^[-*+]\s+/.test(lines[i].trim())) {
-        items.push(lines[i].trim().replace(/^[-*+]\s+/, ""));
+        items.push(parseListItem(lines[i].trim().replace(/^[-*+]\s+/, "")));
         i++;
       }
       blocks.push({ type: "list", ordered: false, items });
@@ -202,9 +212,9 @@ function parseMarkdown(md: string): MarkdownBlock[] {
     }
 
     if (/^\d+\.\s+/.test(line.trim())) {
-      const items: string[] = [];
+      const items: ListItem[] = [];
       while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
-        items.push(lines[i].trim().replace(/^\d+\.\s+/, ""));
+        items.push(parseListItem(lines[i].trim().replace(/^\d+\.\s+/, "")));
         i++;
       }
       blocks.push({ type: "list", ordered: true, items });
@@ -240,344 +250,107 @@ function parseMarkdown(md: string): MarkdownBlock[] {
 function SpecMarkdownView({ content }: { content: string }) {
   const blocks = useMemo(() => parseMarkdown(content), [content]);
 
+  // Share `.spec-doc-prose` with the TipTap editor so view ↔ edit keep the
+  // same type scale, spacing, and block chrome. Only the toolbar differs.
   return (
-    <div
-      className="spec-prose"
-      style={{
-        fontSize: 14,
-        lineHeight: 1.7,
-        color: "var(--fg)",
-        display: "flex",
-        flexDirection: "column",
-        gap: 14,
-      }}
-    >
+    <div className="spec-doc-prose">
       {blocks.map((block, idx) => {
         switch (block.type) {
           case "heading": {
-            const HeadingTag = `h${block.level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-            const fontSizes: Record<number, number> = {
-              1: 22,
-              2: 18,
-              3: 15,
-              4: 14,
-              5: 13,
-              6: 12,
-            };
+            const HeadingTag = `h${Math.min(block.level, 4)}` as
+              | "h1"
+              | "h2"
+              | "h3"
+              | "h4";
             return (
-              <HeadingTag
-                key={idx}
-                style={{
-                  fontSize: fontSizes[block.level] ?? 16,
-                  fontWeight: 600,
-                  color: "var(--fg)",
-                  margin: 0,
-                  paddingTop: idx > 0 ? 8 : 0,
-                  paddingBottom: 4,
-                  borderBottom: block.level <= 2 ? "1px solid var(--border)" : "none",
-                  letterSpacing: "-0.01em",
-                }}
-              >
+              <HeadingTag key={idx}>
                 {renderInline(block.text)}
               </HeadingTag>
             );
           }
           case "paragraph":
-            return (
-              <p key={idx} style={{ margin: 0, color: "var(--fg)" }}>
-                {renderInline(block.text)}
-              </p>
-            );
+            return <p key={idx}>{renderInline(block.text)}</p>;
           case "list": {
+            const isTaskList = block.items.some((item) => item.checked !== null);
             const ListTag = block.ordered ? "ol" : "ul";
             return (
               <ListTag
                 key={idx}
-                style={{
-                  margin: 0,
-                  paddingLeft: 22,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                }}
+                {...(isTaskList ? { "data-type": "taskList" as const } : {})}
               >
                 {block.items.map((item, itemIdx) => (
-                  <li key={itemIdx}>{renderInline(item)}</li>
+                  <li
+                    key={itemIdx}
+                    {...(item.checked !== null
+                      ? { "data-checked": item.checked ? "true" : "false" }
+                      : {})}
+                  >
+                    {item.checked !== null ? (
+                      <>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={item.checked}
+                            // Read view: the file lives in GitLab, so state
+                            // changes belong to the editor, not here.
+                            disabled
+                            aria-label={
+                              item.checked
+                                ? "Acceptance criterion met"
+                                : "Acceptance criterion not met"
+                            }
+                            readOnly
+                          />
+                        </label>
+                        <div>{renderInline(item.text)}</div>
+                      </>
+                    ) : (
+                      renderInline(item.text)
+                    )}
+                  </li>
                 ))}
               </ListTag>
             );
           }
           case "blockquote":
             return (
-              <blockquote
-                key={idx}
-                style={{
-                  margin: 0,
-                  padding: "8px 14px",
-                  borderLeft: "3px solid var(--accent)",
-                  background: "oklch(97% 0.005 250)",
-                  borderRadius: "0 6px 6px 0",
-                  color: "var(--muted)",
-                  fontStyle: "italic",
-                }}
-              >
-                {renderInline(block.text)}
-              </blockquote>
+              <blockquote key={idx}>{renderInline(block.text)}</blockquote>
             );
           case "code":
             return (
-              <div
-                key={idx}
-                style={{
-                  border: "1px solid var(--border)",
-                  borderRadius: 6,
-                  background: "var(--surface)",
-                  overflow: "hidden",
-                }}
-              >
-                {block.lang && (
-                  <div
-                    style={{
-                      padding: "4px 10px",
-                      background: "oklch(96% 0.005 250)",
-                      borderBottom: "1px solid var(--border)",
-                      fontSize: 11,
-                      fontFamily: "var(--font-mono)",
-                      color: "var(--muted)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    {block.lang}
-                  </div>
-                )}
-                <pre
-                  style={{
-                    margin: 0,
-                    padding: "12px 14px",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 12,
-                    lineHeight: 1.6,
-                    overflowX: "auto",
-                    color: "var(--fg)",
-                  }}
-                >
-                  <code>{block.code}</code>
-                </pre>
-              </div>
+              <pre key={idx} data-lang={block.lang || undefined}>
+                <code>{block.code}</code>
+              </pre>
             );
           case "table":
             return (
-              <div
-                key={idx}
-                style={{
-                  border: "1px solid var(--border)",
-                  borderRadius: 6,
-                  overflowX: "auto",
-                }}
-              >
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    fontSize: 13,
-                    textAlign: "left",
-                  }}
-                >
-                  {block.headers.length > 0 && (
-                    <thead>
-                      <tr style={{ background: "oklch(96% 0.005 250)" }}>
-                        {block.headers.map((header, hIdx) => (
-                          <th
-                            key={hIdx}
-                            style={{
-                              padding: "8px 12px",
-                              borderBottom: "1px solid var(--border)",
-                              fontWeight: 600,
-                              color: "var(--fg)",
-                            }}
-                          >
-                            {renderInline(header)}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                  )}
-                  <tbody>
-                    {block.rows.map((row, rIdx) => (
-                      <tr
-                        key={rIdx}
-                        style={{
-                          borderBottom:
-                            rIdx < block.rows.length - 1
-                              ? "1px solid var(--border)"
-                              : undefined,
-                        }}
-                      >
-                        {row.map((cell, cIdx) => (
-                          <td
-                            key={cIdx}
-                            style={{
-                              padding: "8px 12px",
-                              color: "var(--fg)",
-                            }}
-                          >
-                            {renderInline(cell)}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <table key={idx}>
+                {block.headers.length > 0 && (
+                  <thead>
+                    <tr>
+                      {block.headers.map((header, hIdx) => (
+                        <th key={hIdx}>{renderInline(header)}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                )}
+                <tbody>
+                  {block.rows.map((row, rIdx) => (
+                    <tr key={rIdx}>
+                      {row.map((cell, cIdx) => (
+                        <td key={cIdx}>{renderInline(cell)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             );
           case "hr":
-            return (
-              <hr
-                key={idx}
-                style={{
-                  border: "none",
-                  borderTop: "1px solid var(--border)",
-                  margin: "8px 0",
-                }}
-              />
-            );
+            return <hr key={idx} />;
           default:
             return null;
         }
       })}
-    </div>
-  );
-}
-
-interface ParsedDiffLine {
-  type: "hunk" | "addition" | "deletion" | "context";
-  oldNum: number | null;
-  newNum: number | null;
-  prefix: string;
-  content: string;
-}
-
-function getDiffStats(diffText?: string) {
-  if (!diffText) return { additions: 0, deletions: 0 };
-  let additions = 0;
-  let deletions = 0;
-  const lines = diffText.replace(/\r\n/g, "\n").split("\n");
-  for (const line of lines) {
-    if (line.startsWith("+") && !line.startsWith("+++")) additions++;
-    else if (line.startsWith("-") && !line.startsWith("---")) deletions++;
-  }
-  return { additions, deletions };
-}
-
-function DiffLinesViewer({
-  rawDiff,
-  emptyNotice,
-}: {
-  rawDiff: string;
-  emptyNotice?: string;
-}) {
-  if (!rawDiff || !rawDiff.trim()) {
-    return (
-      <div className="diff-empty-banner">
-        {emptyNotice || "No textual changes to display."}
-      </div>
-    );
-  }
-
-  const parsedLines = useMemo(() => {
-    const rawLines = rawDiff.replace(/\r\n/g, "\n").split("\n");
-    const result: ParsedDiffLine[] = [];
-    let currentOldLine = 1;
-    let currentNewLine = 1;
-
-    for (let i = 0; i < rawLines.length; i++) {
-      const line = rawLines[i];
-      if (line.startsWith("---") || line.startsWith("+++")) {
-        continue;
-      }
-
-      if (line.startsWith("@@")) {
-        const match = line.match(/^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
-        if (match) {
-          currentOldLine = parseInt(match[1], 10);
-          currentNewLine = parseInt(match[2], 10);
-        }
-        result.push({
-          type: "hunk",
-          oldNum: null,
-          newNum: null,
-          prefix: "...",
-          content: line,
-        });
-        continue;
-      }
-
-      if (line.startsWith("+")) {
-        result.push({
-          type: "addition",
-          oldNum: null,
-          newNum: currentNewLine++,
-          prefix: "+",
-          content: line.slice(1),
-        });
-        continue;
-      }
-
-      if (line.startsWith("-")) {
-        result.push({
-          type: "deletion",
-          oldNum: currentOldLine++,
-          newNum: null,
-          prefix: "-",
-          content: line.slice(1),
-        });
-        continue;
-      }
-
-      if (line.startsWith("\\")) {
-        result.push({
-          type: "context",
-          oldNum: null,
-          newNum: null,
-          prefix: " ",
-          content: line,
-        });
-        continue;
-      }
-
-      if (line === "" && i === rawLines.length - 1) {
-        continue;
-      }
-
-      result.push({
-        type: "context",
-        oldNum: currentOldLine++,
-        newNum: currentNewLine++,
-        prefix: " ",
-        content: line.startsWith(" ") ? line.slice(1) : line,
-      });
-    }
-
-    return result;
-  }, [rawDiff]);
-
-  return (
-    <div className="diff-lines-wrap">
-      {parsedLines.map((row, idx) => (
-        <div key={idx} className={`diff-line is-${row.type}`}>
-          <span className="diff-line-num-old">
-            {row.type === "hunk" ? "..." : row.oldNum ?? ""}
-          </span>
-          <span className="diff-line-num-new">
-            {row.type === "hunk" ? "..." : row.newNum ?? ""}
-          </span>
-          <span className="diff-line-prefix">
-            {row.type === "hunk" ? " " : row.prefix}
-          </span>
-          <span className="diff-line-content">{row.content || " "}</span>
-        </div>
-      ))}
     </div>
   );
 }
@@ -591,6 +364,8 @@ function CommitDiffModal({
   projectId: string;
   onClose: () => void;
 }) {
+  const reduce = useReducedMotion();
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -613,15 +388,31 @@ function CommitDiffModal({
     },
   });
 
+  const diffs = useMemo(() => commitDetailQuery.data?.diffs ?? [], [commitDetailQuery.data]);
+  const fileCount = commitDetailQuery.isPending ? null : diffs.length;
+
   return (
-    <div
+    <motion.div
       className="run-modal-overlay diff-modal-overlay"
+      style={{ animation: "none" }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="diff-modal-title"
+      initial={reduce ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="run-modal diff-modal" onClick={(e) => e.stopPropagation()}>
+      <motion.div
+        className="run-modal diff-modal"
+        style={{ animation: "none" }}
+        onClick={(e) => e.stopPropagation()}
+        initial={reduce ? false : { opacity: 0, scale: 0.97, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: 8 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+      >
         <button
           className="run-modal-close"
           type="button"
@@ -644,162 +435,82 @@ function CommitDiffModal({
           </svg>
         </button>
 
-        <div className="run-modal-head">
-          <div className="run-modal-eyebrow">
-            <span>Commit changes</span>
-            <span style={{ color: "var(--border)" }}>·</span>
-            <code
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                background: "oklch(95% 0.005 250)",
-                padding: "1px 6px",
-                borderRadius: 4,
-              }}
-            >
-              {commit.shortHash}
-            </code>
-            <span style={{ color: "var(--border)" }}>·</span>
-            <span>{commitDetailQuery.data?.diffs?.length ?? 0} files changed</span>
-          </div>
-          <h2 className="run-modal-title" id="diff-modal-title">
+        <div className="run-modal-head diff-modal-head">
+          <h2 className="diff-modal-title" id="diff-modal-title">
             {commit.message}
           </h2>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              marginTop: 8,
-              fontSize: 12,
-              color: "var(--muted)",
-            }}
-          >
-            <span
-              style={{
-                width: 18,
-                height: 18,
-                borderRadius: "50%",
-                background: "oklch(90% 0.02 250)",
-                color: "var(--fg)",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 10,
-                fontWeight: 600,
-                textTransform: "uppercase",
-              }}
-            >
-              {commit.authorName ? commit.authorName.charAt(0) : "—"}
+          <p className="diff-modal-meta">
+            <span className="diff-modal-author">{commit.authorName || "Unknown"}</span>
+            <span className="diff-modal-dot" aria-hidden>
+              ·
             </span>
-            <strong style={{ color: "var(--fg)" }}>{commit.authorName}</strong>
-            <span style={{ color: "var(--border)" }}>·</span>
-            <span>committed {fmtRel(commit.committedDate)}</span>
-          </div>
+            <span className="diff-modal-when">{fmtRel(commit.committedDate)}</span>
+          </p>
+          <p className="diff-modal-refs">
+            <code className="diff-modal-sha">{commit.shortHash}</code>
+            <span className="diff-modal-dot" aria-hidden>
+              ·
+            </span>
+            <span className="diff-modal-files">
+              {fileCount === null
+                ? "… files"
+                : `${fileCount} ${fileCount === 1 ? "file" : "files"}`}
+            </span>
+          </p>
         </div>
 
-        <div className="diff-modal-body">
-          {commitDetailQuery.isPending ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div className="diff-file-card">
-                <div className="diff-file-head">
-                  <Skeleton width={180} height={12} borderRadius={3} />
-                  <Skeleton width={60} height={12} borderRadius={3} />
-                </div>
-                <div style={{ padding: "14px", display: "grid", gap: 8 }}>
-                  <Skeleton width="92%" height={12} borderRadius={3} />
-                  <Skeleton width="65%" height={12} borderRadius={3} />
-                  <Skeleton width="80%" height={12} borderRadius={3} />
-                  <Skeleton width="45%" height={12} borderRadius={3} />
+        {commitDetailQuery.isPending ? (
+          <div className="diff-reader" aria-busy="true">
+            <div className="diff-rail">
+              <div className="diff-rail-head">
+                <Skeleton width={56} height={11} borderRadius={3} />
+              </div>
+              <ul className="diff-rail-list">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <li key={i}>
+                    <div className="diff-rail-item diff-rail-skel" aria-hidden>
+                      <Skeleton width={18} height={18} borderRadius={5} />
+                      <div className="diff-rail-skel-text">
+                        <Skeleton width={`${62 + ((i * 17) % 28)}%`} height={12} borderRadius={3} />
+                      </div>
+                      <Skeleton width={28} height={10} borderRadius={3} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="diff-pane">
+              <div className="diff-pane-body">
+                <div className="diff-file-card diff-file-card-skel">
+                  <div className="diff-file-head">
+                    <Skeleton width={220} height={12} borderRadius={3} />
+                    <Skeleton width={64} height={12} borderRadius={3} />
+                  </div>
+                  <div className="diff-skel-lines">
+                    {Array.from({ length: 14 }).map((_, i) => (
+                      <Skeleton
+                        key={i}
+                        width={`${52 + ((i * 19) % 42)}%`}
+                        height={12}
+                        borderRadius={3}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          ) : commitDetailQuery.isError ? (
-            <div style={{ padding: "24px", textAlign: "center", color: "var(--danger)" }}>
+          </div>
+        ) : commitDetailQuery.isError ? (
+          <div className="diff-reader">
+            <div className="diff-empty-state is-error">
               {String(commitDetailQuery.error?.message || "Failed to load commit diff")}
             </div>
-          ) : commitDetailQuery.data?.diffs?.length ? (
-            commitDetailQuery.data.diffs.map((diff, index) => {
-              const stats = getDiffStats(diff.diff);
-              return (
-                <div
-                  key={`${diff.oldPath || ""}-${diff.newPath || ""}-${index}`}
-                  className="diff-file-card"
-                >
-                  <div className="diff-file-head">
-                    <div className="diff-file-info">
-                      <svg
-                        className="diff-file-icon"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                      </svg>
-                      {diff.renamedFile ? (
-                        <div className="diff-file-path">
-                          <span className="diff-path-old">{diff.oldPath}</span>
-                          <span className="diff-path-arrow">→</span>
-                          <span className="diff-path-new">{diff.newPath}</span>
-                        </div>
-                      ) : diff.deletedFile ? (
-                        <div className="diff-file-path">
-                          <span className="diff-path-old">{diff.oldPath}</span>
-                        </div>
-                      ) : (
-                        <div className="diff-file-path">
-                          <span className="diff-path-new">
-                            {diff.newPath || diff.oldPath}
-                          </span>
-                        </div>
-                      )}
-                      {diff.renamedFile ? (
-                        <span className="diff-badge is-renamed">Renamed</span>
-                      ) : diff.newFile ? (
-                        <span className="diff-badge is-new">New</span>
-                      ) : diff.deletedFile ? (
-                        <span className="diff-badge is-deleted">Deleted</span>
-                      ) : (
-                        <span className="diff-badge is-modified">Modified</span>
-                      )}
-                    </div>
-                    {(stats.additions > 0 || stats.deletions > 0) && (
-                      <div className="diff-file-stats">
-                        {stats.additions > 0 && (
-                          <span className="diff-stat-add">+{stats.additions}</span>
-                        )}
-                        {stats.deletions > 0 && (
-                          <span className="diff-stat-del">-{stats.deletions}</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <DiffLinesViewer
-                    rawDiff={diff.diff}
-                    emptyNotice={
-                      diff.renamedFile
-                        ? "File moved without content changes."
-                        : undefined
-                    }
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <div style={{ padding: "32px", textAlign: "center", color: "var(--muted)" }}>
-              No file diffs recorded for this commit.
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+          </div>
+        ) : (
+          <CommitDiffViewer diffs={diffs} />
+        )}
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -812,6 +523,26 @@ export function SpecDetailPage({ specId }: { specId: string }) {
   const [commitMessage, setCommitMessage] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [activeModalCommit, setActiveModalCommit] = useState<SpecCommit | null>(null);
+  // Portal after mount so SSR markup matches the first client paint.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const reduceMotion = useReducedMotion();
+  // Shared enter/exit for the view ↔ edit layout swap. Blur bridges the
+  // crossfade so the eye reads one morph instead of two overlapping layers
+  // (Emil: "Use blur to mask imperfect transitions").
+  const swapTransition = {
+    duration: reduceMotion ? 0.01 : 0.22,
+    ease: [0.23, 1, 0.32, 1] as const,
+  };
+  const swapInitial = reduceMotion
+    ? { opacity: 0 }
+    : { opacity: 0, filter: "blur(2px)", transform: "translateY(4px)" };
+  const swapAnimate = reduceMotion
+    ? { opacity: 1 }
+    : { opacity: 1, filter: "blur(0px)", transform: "translateY(0px)" };
+  const swapExit = reduceMotion
+    ? { opacity: 0 }
+    : { opacity: 0, filter: "blur(2px)", transform: "translateY(-3px)" };
 
   const projectQuery = useQuery({
     queryKey: ["projects", decoded?.projectId],
@@ -861,6 +592,18 @@ export function SpecDetailPage({ specId }: { specId: string }) {
     },
     onError: (error) => setNotice(error.message),
   });
+
+  useEffect(() => {
+    if (!editing) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        saveMutation.mutate();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [editing, saveMutation]);
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -916,38 +659,76 @@ export function SpecDetailPage({ specId }: { specId: string }) {
           <div className="detail-title-row">
             <span className="detail-title">{displayName}</span>
             <div className="detail-actions">
-              {!editing && (
-                <button
-                  className="btn btn-secondary"
-                  type="button"
-                  onClick={() => {
-                    setContent(file.content);
-                    setEditing(true);
-                    setNotice(null);
-                  }}
-                >
-                  Edit
-                </button>
-              )}
-              {editing && (
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  disabled={saveMutation.isPending}
-                  onClick={() => saveMutation.mutate()}
-                >
-                  {saveMutation.isPending ? "Saving…" : "Save changes"}
-                </button>
-              )}
+              <AnimatePresence mode="popLayout" initial={false}>
+                {!editing ? (
+                  <motion.button
+                    key="edit"
+                    className="action-chip is-edit"
+                    type="button"
+                    initial={swapInitial}
+                    animate={swapAnimate}
+                    exit={swapExit}
+                    transition={swapTransition}
+                    onClick={() => {
+                      setContent(file.content);
+                      setEditing(true);
+                      setNotice(null);
+                    }}
+                  >
+                    <span className="action-chip-icon" aria-hidden>
+                      <Pencil />
+                    </span>
+                    Edit
+                  </motion.button>
+                ) : (
+                  <motion.div
+                    key="edit-actions"
+                    className="detail-actions-edit"
+                    initial={swapInitial}
+                    animate={swapAnimate}
+                    exit={swapExit}
+                    transition={swapTransition}
+                  >
+                    <button
+                      className="btn btn-secondary"
+                      type="button"
+                      disabled={saveMutation.isPending}
+                      onClick={() => {
+                        setContent(file.content);
+                        setEditing(false);
+                        setCommitMessage("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      disabled={saveMutation.isPending}
+                      onClick={() => saveMutation.mutate()}
+                    >
+                      {saveMutation.isPending ? "Saving…" : "Save changes"}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <button
-                className="btn btn-ghost"
+                className="action-chip is-delete"
                 type="button"
                 disabled={deleteMutation.isPending}
+                aria-busy={deleteMutation.isPending}
                 onClick={() =>
                   window.confirm(`Delete ${displayName}?`) && deleteMutation.mutate()
                 }
               >
-                Delete
+                <span className="action-chip-icon" aria-hidden>
+                  {deleteMutation.isPending ? (
+                    <LoaderCircle className="spec-spin" />
+                  ) : (
+                    <Trash2 />
+                  )}
+                </span>
+                {deleteMutation.isPending ? "Deleting…" : "Delete"}
               </button>
             </div>
           </div>
@@ -969,18 +750,36 @@ export function SpecDetailPage({ specId }: { specId: string }) {
             <section className="panel" data-od-id="spec-body">
               <div className="spec-body-panel-head">
                 <span className="spec-body-panel-label">
-                  {editing ? "Edit spec" : "Content"}
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={editing ? "edit" : "view"}
+                      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
+                      animate={reduceMotion ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)" }}
+                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
+                      transition={swapTransition}
+                      style={{ display: "inline-block" }}
+                    >
+                      {editing ? "Edit spec" : "Content"}
+                    </motion.span>
+                  </AnimatePresence>
                 </span>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  {editing && (
-                    <input
-                      className="input"
-                      style={{ width: 220, height: 28 }}
-                      placeholder="Commit message"
-                      value={commitMessage}
-                      onChange={(event) => setCommitMessage(event.target.value)}
-                    />
-                  )}
+                  <AnimatePresence initial={false}>
+                    {editing && (
+                      <motion.input
+                        key="commit-msg"
+                        className="input"
+                        style={{ width: 220, height: 28 }}
+                        placeholder="Commit message"
+                        value={commitMessage}
+                        onChange={(event) => setCommitMessage(event.target.value)}
+                        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, transform: "translateX(6px)" }}
+                        animate={reduceMotion ? { opacity: 1 } : { opacity: 1, transform: "translateX(0px)" }}
+                        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, transform: "translateX(6px)" }}
+                        transition={swapTransition}
+                      />
+                    )}
+                  </AnimatePresence>
                   <Link
                     className="spec-open-doc-btn"
                     to="/specs/$id/document"
@@ -994,23 +793,41 @@ export function SpecDetailPage({ specId }: { specId: string }) {
                   </Link>
                 </div>
               </div>
-              <div className="panel-body">
-                {editing ? (
-                  <textarea
-                    className="textarea"
-                    value={content}
-                    onChange={(event) => setContent(event.target.value)}
-                    style={{
-                      minHeight: 520,
-                      width: "100%",
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 12,
-                      lineHeight: 1.6,
-                    }}
-                  />
-                ) : (
-                  <SpecMarkdownView content={file.content} />
-                )}
+              <div className="spec-body-swap" data-editing={editing || undefined}>
+                <AnimatePresence mode="sync" initial={false}>
+                  {editing ? (
+                    <motion.div
+                      key="editor"
+                      className="spec-body-swap-layer"
+                      initial={swapInitial}
+                      animate={swapAnimate}
+                      exit={swapExit}
+                      transition={swapTransition}
+                    >
+                      <div className="spec-detail-editor-container">
+                        <SpecDocumentEditor
+                          key={`${decoded.projectId}:${decoded.path}:edit`}
+                          initialMarkdown={content || file.content}
+                          onMarkdownChange={setContent}
+                          className="spec-detail-embedded-editor"
+                        />
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="reader"
+                      className="spec-body-swap-layer"
+                      initial={swapInitial}
+                      animate={swapAnimate}
+                      exit={swapExit}
+                      transition={swapTransition}
+                    >
+                      <div className="spec-detail-content-frame">
+                        <SpecMarkdownView content={file.content} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </section>
           </div>
@@ -1199,13 +1016,26 @@ export function SpecDetailPage({ specId }: { specId: string }) {
         </div>
       </div>
 
-      {activeModalCommit && (
-        <CommitDiffModal
-          commit={activeModalCommit}
-          projectId={project.id}
-          onClose={() => setActiveModalCommit(null)}
-        />
-      )}
+      {/* Portal to <body>: `.main` carries `view-transition-name: app-main`,
+          which makes `position: fixed` resolve against the content column
+          instead of the viewport — so a modal rendered here could never
+          cover the sidebar. AnimatePresence keeps the node mounted through
+          the exit motion. */}
+      {mounted &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {activeModalCommit && (
+              <CommitDiffModal
+                key={activeModalCommit.hash}
+                commit={activeModalCommit}
+                projectId={project.id}
+                onClose={() => setActiveModalCommit(null)}
+              />
+            )}
+          </AnimatePresence>,
+          document.body,
+        )}
     </div>
   );
 }
