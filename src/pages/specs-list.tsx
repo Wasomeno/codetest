@@ -7,8 +7,8 @@ import { useProjectSpecs } from "~/hooks/api/useProjectSpecs";
 import { type LiveSpec } from "~/hooks/api/useProjectSpecs";
 import { useProjects } from "~/hooks/api/useProjects";
 import { colorForName } from "~/lib/map-app-project";
-import { searchSpecs, saveSpecsFile } from "~/api/specs";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { searchSpecs } from "~/api/specs";
+import { useQuery } from "@tanstack/react-query";
 
 const SORTS = {
   name: { label: "Name · A → Z", cmp: (a: LiveSpec, b: LiveSpec) => a.name.localeCompare(b.name) },
@@ -86,27 +86,7 @@ export function SpecsListPage({ defaultProject }: SpecsListPageProps = {}) {
     },
     enabled: !!defaultProject && !!searchQuery.trim(),
   });
-  const [newSpecOpen, setNewSpecOpen] = useState(false);
-  const [newSpecPath, setNewSpecPath] = useState("docs/specs/new-spec.md");
-  const [newSpecContent, setNewSpecContent] = useState("# New spec\n\nDescribe the expected behavior.\n");
-  const [newSpecProject, setNewSpecProject] = useState(defaultProject ?? "");
-  const queryClient = useQueryClient();
-  const createSpecMutation = useMutation({
-    mutationFn: async () => {
-      if (!newSpecProject || !newSpecPath.trim()) throw new Error("Choose a project and enter a file path");
-      const response = await saveSpecsFile(newSpecProject, {
-        path: newSpecPath.trim(),
-        content: newSpecContent,
-        action: "create",
-        commitMessage: `Create ${newSpecPath.trim()}`,
-      });
-      if (!response.success) throw new Error(response.error || "Failed to create spec");
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["live-specs"] });
-      setNewSpecOpen(false);
-    },
-  });
+
 
   // Auto-sanitize project filter when projects load so stale or mock IDs don't empty the list
   useEffect(() => {
@@ -212,27 +192,9 @@ export function SpecsListPage({ defaultProject }: SpecsListPageProps = {}) {
             Every product behavior your team has committed to, organized by project.
           </p>
         </div>
-        <div className="page-head-actions">
-          <button
-            className="btn btn-secondary"
-            type="button"
-            disabled
-            title="Import is not supported by the current backend"
-          >
-            Import
-          </button>
-          <button
-            className="btn btn-primary"
-            type="button"
-            onClick={() => setNewSpecOpen((open) => !open)}
-          >
-            New spec
-          </button>
-        </div>
       </div>
 
       <div className="page-body">
-        {newSpecOpen && <section className="panel" style={{ marginBottom: 16 }} data-od-id="new-spec-form"><div className="panel-head"><span className="panel-title">New spec</span><span className="panel-meta">Creates a GitLab file</span></div><div className="panel-body" style={{ display: "grid", gap: 10 }}><select className="input" value={newSpecProject} onChange={(event) => setNewSpecProject(event.target.value)} disabled={!!defaultProject}><option value="">Select project</option>{projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select><input className="input" value={newSpecPath} onChange={(event) => setNewSpecPath(event.target.value)} placeholder="docs/specs/example.md" /><textarea className="textarea" value={newSpecContent} onChange={(event) => setNewSpecContent(event.target.value)} rows={8} style={{ fontFamily: "var(--font-mono)", fontSize: 12 }} />{createSpecMutation.isError && <span style={{ color: "var(--danger)", fontSize: 12 }}>{String(createSpecMutation.error)}</span>}<button className="btn btn-primary" type="button" disabled={createSpecMutation.isPending} onClick={() => createSpecMutation.mutate()}>{createSpecMutation.isPending ? "Creating…" : "Create spec"}</button></div></section>}
         <div className="toolbar" data-od-id="specs-toolbar">
           {!defaultProject && (
             <div

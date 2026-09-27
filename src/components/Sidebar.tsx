@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession } from "~/contexts/session-context";
 import { useLogout } from "~/hooks/use-logout";
@@ -432,7 +432,11 @@ export function Sidebar() {
                 ? "specs"
                 : null;
         return (
-          <div key={project.id} data-od-id={`nav-project-${project.id}`}>
+          <div
+            key={project.id}
+            data-od-id={`nav-project-${project.id}`}
+            style={{ "--project-color": project.color } as CSSProperties}
+          >
             <Link
               to="/projects/$id"
               params={{ id: project.id }}
