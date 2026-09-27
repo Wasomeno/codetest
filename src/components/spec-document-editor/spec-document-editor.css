@@ -666,6 +666,23 @@ body:has(.spec-doc-shell) {
   letter-spacing: -0.005em;
 }
 
+/* View ↔ edit body crossfade. Both layers share one grid cell so the
+   panel height stays put while opacity + blur hand off (Emil: blur bridges
+   imperfect crossfades so the eye reads one morph, not two objects). */
+.spec-body-swap {
+  display: grid;
+  min-height: 520px;
+}
+.spec-body-swap-layer {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .spec-body-swap-layer {
+    filter: none !important;
+  }
+}
+
 .spec-open-doc-btn {
   appearance: none;
   border: 1px solid var(--border);
@@ -720,3 +737,72 @@ body:has(.spec-doc-shell) {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Spec detail embedded editor + read view share one content frame so
+   toggling edit only adds the toolbar — type, padding, and chrome stay put. */
+.spec-detail-editor-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.spec-detail-content-frame,
+.spec-detail-embedded-editor .spec-doc-canvas-wrap {
+  padding: 20px 24px 36px;
+  background: var(--surface);
+  min-height: 460px;
+  box-sizing: border-box;
+}
+
+.spec-detail-content-frame .spec-doc-prose {
+  /* Read view is not a grow-to-fill editor surface. */
+  min-height: 0;
+}
+
+.spec-detail-content-frame .spec-doc-prose > :first-child {
+  margin-top: 0;
+}
+
+.spec-detail-content-frame .spec-doc-prose ul[data-type='taskList'] li > label input:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.spec-detail-embedded-editor {
+  height: auto;
+  min-height: 520px;
+  background: var(--surface);
+  border-radius: 0 0 var(--radius) var(--radius);
+  border: none;
+}
+
+.spec-detail-embedded-editor .spec-doc-toolbar {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  padding: 6px 12px;
+}
+
+.spec-detail-embedded-editor .spec-doc-page {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-height: 420px;
+}
+
+.spec-detail-embedded-editor .spec-doc-page-inner {
+  padding: 0;
+}
+
+.spec-detail-embedded-editor .spec-doc-prose {
+  min-height: 420px;
+}
+
+.spec-detail-embedded-editor .spec-doc-prose {
+  min-height: 420px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
